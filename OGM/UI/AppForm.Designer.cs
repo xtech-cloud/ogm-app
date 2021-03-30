@@ -1,5 +1,5 @@
 ﻿
-namespace OGM.UI
+namespace OGM
 {
     partial class AppForm
     {
@@ -53,22 +53,23 @@ namespace OGM.UI
             this.scApp.Panel1.Controls.Add(this.panel3);
             this.scApp.Panel1.Controls.Add(this.panel2);
             this.scApp.Panel1.Controls.Add(this.panel1);
-            this.scApp.Size = new System.Drawing.Size(2053, 1121);
-            this.scApp.SplitterDistance = 684;
+            this.scApp.Size = new System.Drawing.Size(1684, 1061);
+            this.scApp.SplitterDistance = 647;
+            this.scApp.SplitterWidth = 5;
             this.scApp.TabIndex = 0;
             // 
             // panel3
             // 
-            this.panel3.Location = new System.Drawing.Point(422, 125);
+            this.panel3.Location = new System.Drawing.Point(369, 142);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1619, 545);
+            this.panel3.Size = new System.Drawing.Size(1417, 618);
             this.panel3.TabIndex = 2;
             // 
             // panel2
             // 
-            this.panel2.Location = new System.Drawing.Point(422, 13);
+            this.panel2.Location = new System.Drawing.Point(369, 15);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1619, 105);
+            this.panel2.Size = new System.Drawing.Size(1417, 119);
             this.panel2.TabIndex = 1;
             // 
             // panel1
@@ -77,15 +78,15 @@ namespace OGM.UI
             this.panel1.Controls.Add(this.treeView1);
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(412, 667);
+            this.panel1.Size = new System.Drawing.Size(360, 641);
             this.panel1.TabIndex = 0;
             // 
             // cbLog
             // 
             this.cbLog.AutoSize = true;
-            this.cbLog.Location = new System.Drawing.Point(10, 634);
+            this.cbLog.Location = new System.Drawing.Point(9, 719);
             this.cbLog.Name = "cbLog";
-            this.cbLog.Size = new System.Drawing.Size(59, 19);
+            this.cbLog.Size = new System.Drawing.Size(51, 21);
             this.cbLog.TabIndex = 1;
             this.cbLog.Text = "日志";
             this.cbLog.UseVisualStyleBackColor = true;
@@ -93,16 +94,16 @@ namespace OGM.UI
             // 
             // treeView1
             // 
-            this.treeView1.Location = new System.Drawing.Point(10, 22);
+            this.treeView1.Location = new System.Drawing.Point(9, 25);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(388, 591);
+            this.treeView1.Size = new System.Drawing.Size(340, 521);
             this.treeView1.TabIndex = 0;
             // 
             // AppForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(2053, 1121);
+            this.ClientSize = new System.Drawing.Size(1684, 1061);
             this.Controls.Add(this.scApp);
             this.Name = "AppForm";
             this.Text = "AppForm";

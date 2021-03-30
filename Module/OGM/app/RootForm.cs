@@ -27,9 +27,10 @@ namespace app
             base.Dispose(disposing);
         }
 
-        public void SetMainPanel(ContainerControl _panel)
+        public void SetMainPanel(object _panel)
         {
-            this.Controls.Add(_panel);
+            ContainerControl panel = _panel as ContainerControl;
+            this.Controls.Add(panel);
         }
 
         private void InitializeComponent()

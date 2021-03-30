@@ -5,7 +5,6 @@ namespace OGM
     public class AppView : View
     {
         public const string NAME = "AppView";
-        private View.UiFacade appFacade = null;
 
         protected override void preSetup()
         {

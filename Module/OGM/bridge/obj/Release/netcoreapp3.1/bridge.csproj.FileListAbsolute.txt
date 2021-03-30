@@ -1,0 +1,11 @@
+D:\github-ogm\ogm-app\Module\OGM\bridge\bin\Release\netcoreapp3.1\bridge.deps.json
+D:\github-ogm\ogm-app\Module\OGM\bridge\bin\Release\netcoreapp3.1\bridge.dll
+D:\github-ogm\ogm-app\Module\OGM\bridge\bin\Release\netcoreapp3.1\bridge.pdb
+D:\github-ogm\ogm-app\Module\OGM\bridge\bin\Release\netcoreapp3.1\oelMVCS.dll
+D:\github-ogm\ogm-app\Module\OGM\bridge\obj\Release\netcoreapp3.1\bridge.csprojAssemblyReference.cache
+D:\github-ogm\ogm-app\Module\OGM\bridge\obj\Release\netcoreapp3.1\bridge.AssemblyInfoInputs.cache
+D:\github-ogm\ogm-app\Module\OGM\bridge\obj\Release\netcoreapp3.1\bridge.AssemblyInfo.cs
+D:\github-ogm\ogm-app\Module\OGM\bridge\obj\Release\netcoreapp3.1\bridge.csproj.CoreCompileInputs.cache
+D:\github-ogm\ogm-app\Module\OGM\bridge\obj\Release\netcoreapp3.1\bridge.csproj.CopyComplete
+D:\github-ogm\ogm-app\Module\OGM\bridge\obj\Release\netcoreapp3.1\bridge.dll
+D:\github-ogm\ogm-app\Module\OGM\bridge\obj\Release\netcoreapp3.1\bridge.pdb

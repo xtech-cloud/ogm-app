@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using XTC.oelMVCS;
 
-namespace OGM.UI
+namespace OGM
 {
     public partial class AppForm : Form
     {
