@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\module\module.csproj" />
+    <ProjectReference Include="..\winform\winform.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="oelMVCS">
+      <HintPath>..\..\..\3rd\oelMVCS.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

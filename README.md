@@ -1,2 +1,0 @@
-# ogm-app
-GUI Application

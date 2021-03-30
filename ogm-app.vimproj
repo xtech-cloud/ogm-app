@@ -1,4 +1,0 @@
-let NERDTreeIgnore=['\.dll$', '\.obj$', '\.exe$', 'bin', 'obj']
-NERDTree
-copen
-Tagbar

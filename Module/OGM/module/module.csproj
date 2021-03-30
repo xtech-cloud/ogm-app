@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="oelMVCS">
+      <HintPath>..\..\..\3rd\oelMVCS.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
