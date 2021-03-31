@@ -6,12 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\module\module.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="oelMVCS">
-      <HintPath>..\..\..\3rd\oelMVCS.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\razor\razor.csproj" />
   </ItemGroup>
 
 </Project>
