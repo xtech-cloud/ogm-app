@@ -1,4 +1,5 @@
-﻿using XTC.oelMVCS;
+﻿using System.Collections.Generic;
+using XTC.oelMVCS;
 
 namespace OGM
 {
@@ -6,13 +7,16 @@ namespace OGM
     {
         public const string NAME = "AppView";
 
+        private AppFacade appFacade = null;
+
         protected override void preSetup()
         {
-            //appFacade.setView(this);
+            appFacade = findFacade(AppFacade.NAME) as AppFacade;
         }
 
         protected override void setup()
         {
+            route("/module/view/attach", this.handleAttachView);
         }
 
 
@@ -20,9 +24,14 @@ namespace OGM
         {
         }
 
-        public void onLogCheckedChanged(bool _checked)
+        private void handleAttachView(Model.Status _status, object _data)
         {
-
+            getLogger().Trace("attach view");
+            Dictionary<string, object> data = _data as Dictionary<string, object>;
+            foreach (string path in data.Keys)
+            {
+                appFacade.form.AddPath(path, data[path]);
+            }
         }
     }
 }

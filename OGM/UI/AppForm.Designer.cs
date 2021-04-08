@@ -30,13 +30,14 @@ namespace OGM
         private void InitializeComponent()
         {
             this.scApp = new System.Windows.Forms.SplitContainer();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
+            this.tcPages = new System.Windows.Forms.TabControl();
             this.panel1 = new System.Windows.Forms.Panel();
             this.cbLog = new System.Windows.Forms.CheckBox();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.tvPages = new System.Windows.Forms.TreeView();
+            this.rtbLog = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.scApp)).BeginInit();
             this.scApp.Panel1.SuspendLayout();
+            this.scApp.Panel2.SuspendLayout();
             this.scApp.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -50,64 +51,86 @@ namespace OGM
             // 
             // scApp.Panel1
             // 
-            this.scApp.Panel1.Controls.Add(this.panel3);
-            this.scApp.Panel1.Controls.Add(this.panel2);
+            this.scApp.Panel1.Controls.Add(this.tcPages);
             this.scApp.Panel1.Controls.Add(this.panel1);
-            this.scApp.Size = new System.Drawing.Size(1684, 1061);
-            this.scApp.SplitterDistance = 647;
+            // 
+            // scApp.Panel2
+            // 
+            this.scApp.Panel2.Controls.Add(this.rtbLog);
+            this.scApp.Size = new System.Drawing.Size(1008, 729);
+            this.scApp.SplitterDistance = 444;
             this.scApp.SplitterWidth = 5;
             this.scApp.TabIndex = 0;
             // 
-            // panel3
+            // tcPages
             // 
-            this.panel3.Location = new System.Drawing.Point(369, 142);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1417, 618);
-            this.panel3.TabIndex = 2;
-            // 
-            // panel2
-            // 
-            this.panel2.Location = new System.Drawing.Point(369, 15);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1417, 119);
-            this.panel2.TabIndex = 1;
+            this.tcPages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tcPages.ItemSize = new System.Drawing.Size(0, 1);
+            this.tcPages.Location = new System.Drawing.Point(266, 12);
+            this.tcPages.Name = "tcPages";
+            this.tcPages.SelectedIndex = 0;
+            this.tcPages.Size = new System.Drawing.Size(730, 393);
+            this.tcPages.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
+            this.tcPages.TabIndex = 0;
             // 
             // panel1
             // 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.panel1.Controls.Add(this.cbLog);
-            this.panel1.Controls.Add(this.treeView1);
+            this.panel1.Controls.Add(this.tvPages);
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(360, 641);
+            this.panel1.Size = new System.Drawing.Size(257, 438);
             this.panel1.TabIndex = 0;
             // 
             // cbLog
             // 
+            this.cbLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cbLog.AutoSize = true;
-            this.cbLog.Location = new System.Drawing.Point(9, 719);
+            this.cbLog.Location = new System.Drawing.Point(9, 408);
             this.cbLog.Name = "cbLog";
             this.cbLog.Size = new System.Drawing.Size(51, 21);
-            this.cbLog.TabIndex = 1;
+            this.cbLog.TabIndex = 2;
             this.cbLog.Text = "日志";
             this.cbLog.UseVisualStyleBackColor = true;
             this.cbLog.CheckedChanged += new System.EventHandler(this.cbLog_CheckedChanged);
             // 
-            // treeView1
+            // tvPages
             // 
-            this.treeView1.Location = new System.Drawing.Point(9, 25);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(340, 521);
-            this.treeView1.TabIndex = 0;
+            this.tvPages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tvPages.Location = new System.Drawing.Point(9, 12);
+            this.tvPages.Name = "tvPages";
+            this.tvPages.PathSeparator = "/";
+            this.tvPages.Size = new System.Drawing.Size(237, 390);
+            this.tvPages.TabIndex = 0;
+            this.tvPages.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvPages_AfterSelect);
+            // 
+            // rtbLog
+            // 
+            this.rtbLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.rtbLog.Location = new System.Drawing.Point(4, 4);
+            this.rtbLog.Name = "rtbLog";
+            this.rtbLog.Size = new System.Drawing.Size(1001, 260);
+            this.rtbLog.TabIndex = 0;
+            this.rtbLog.Text = "";
             // 
             // AppForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1684, 1061);
+            this.ClientSize = new System.Drawing.Size(1008, 729);
             this.Controls.Add(this.scApp);
             this.Name = "AppForm";
-            this.Text = "AppForm";
+            this.Text = "XTC集成工具箱";
             this.scApp.Panel1.ResumeLayout(false);
+            this.scApp.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.scApp)).EndInit();
             this.scApp.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
@@ -120,9 +143,9 @@ namespace OGM
 
         private System.Windows.Forms.SplitContainer scApp;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TreeView treeView1;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.TreeView tvPages;
+        private System.Windows.Forms.RichTextBox rtbLog;
         private System.Windows.Forms.CheckBox cbLog;
+        private System.Windows.Forms.TabControl tcPages;
     }
 }

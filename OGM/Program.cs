@@ -12,31 +12,46 @@ namespace OGM
         [STAThread]
         static void Main()
         {
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            ModuleManager mgr = new ModuleManager();
-            mgr.Parse();
-
-            Logger logger = new ConsoleLogger();
-            Config config = new Config();
-            Framework framework = new Framework();
-            framework.setConfig(config);
-            framework.setLogger(logger);
-            framework.Initialize();
+            ModuleManager moduleMgr = new ModuleManager();
 
             AppForm appForm = new AppForm();
+            StartupForm startupForm = new StartupForm();
+            startupForm.appForm = appForm;
+
+            ConsoleLogger logger = new ConsoleLogger();
+            logger.rtbLog = appForm.getLoggerUi();
+            Config config = new AppConfig();
+            startupForm.config = config;
+
+            Framework framework = new Framework();
+            framework.setLogger(logger);
+            framework.setConfig(config);
+            framework.Initialize();
+
             AppFacade appFacade = new AppFacade();
             appFacade.form = appForm;
             framework.getStaticPipe().RegisterFacade(AppFacade.NAME, appFacade);
-
             AppView appView = new AppView();
             framework.getStaticPipe().RegisterView(AppView.NAME, appView);
 
+            moduleMgr.logger = logger;
+            moduleMgr.framework = framework;
+            // 注册模块
+            moduleMgr.Register();
+
             framework.Setup();
 
+            startupForm.Show();
+            appForm.Hide();
+            Application.Run();
 
-            Application.Run(appForm);
+            // 注销模块窗体
+            moduleMgr.Cancel();
+
 
             framework.Dismantle();
             framework.Release();
