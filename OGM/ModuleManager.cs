@@ -8,9 +8,14 @@ namespace OGM
 {
     class Meta
     {
+        public class Library
+        {
+            public string file { get; set; }
+            public string entry { get; set; }
+        }
         public string uri { get; set; }
         public string version { get; set; }
-        public string[] load { get; set; }
+        public Library[] load { get; set; }
 
     }
     class ModuleManager
@@ -58,24 +63,15 @@ namespace OGM
                 try
                 {
                     Meta meta = System.Text.Json.JsonSerializer.Deserialize<Meta>(json);
-                    foreach (string dll in meta.load)
+                    foreach (Meta.Library library in meta.load)
                     {
-                        string assemblyFile = Path.Combine(entry, dll);
+                        string assemblyFile = Path.Combine(entry, library.file);
                         Assembly assembly = Assembly.LoadFile(assemblyFile);
-                        assemblyMap[dll] = assembly;
-                        if (dll.EndsWith("winform.dll"))
+                        assemblyMap[library.file] = assembly;
+                        if (!string.IsNullOrEmpty(library.entry))
                         {
-                            object instance = assembly.CreateInstance("OGM.Module.File.FormRoot");
-                            Type t = assembly.GetType("OGM.Module.File.FormRoot");
-                            MethodInfo miInject = t.GetMethod("Inject");
-                            miInject.Invoke(instance, new object[] { framework });
-                            MethodInfo miRegister = t.GetMethod("Register");
-                            miRegister.Invoke(instance, null);
-                        }
-                        if (dll.EndsWith("module.dll"))
-                        {
-                            object instance = assembly.CreateInstance("OGM.Module.File.ModuleRoot");
-                            Type t = assembly.GetType("OGM.Module.File.ModuleRoot");
+                            object instance = assembly.CreateInstance(library.entry);
+                            Type t = assembly.GetType(library.entry);
                             MethodInfo miInject = t.GetMethod("Inject");
                             miInject.Invoke(instance, new object[] { framework });
                             MethodInfo miRegister = t.GetMethod("Register");

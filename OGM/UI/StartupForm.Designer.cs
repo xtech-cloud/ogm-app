@@ -143,7 +143,7 @@ namespace OGM
             this.Controls.Add(this.tbUsername);
             this.Controls.Add(this.tbRemote);
             this.Name = "StartupForm";
-            this.Text = "XTC集成工具箱";
+            this.Text = "XTC聚合中台";
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -117,7 +117,7 @@ namespace OGM
             | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbLog.Location = new System.Drawing.Point(4, 4);
             this.rtbLog.Name = "rtbLog";
-            this.rtbLog.Size = new System.Drawing.Size(1001, 260);
+            this.rtbLog.Size = new System.Drawing.Size(1001, 259);
             this.rtbLog.TabIndex = 0;
             this.rtbLog.Text = "";
             // 
@@ -128,7 +128,7 @@ namespace OGM
             this.ClientSize = new System.Drawing.Size(1008, 729);
             this.Controls.Add(this.scApp);
             this.Name = "AppForm";
-            this.Text = "XTC集成工具箱";
+            this.Text = "XTC聚合中台";
             this.scApp.Panel1.ResumeLayout(false);
             this.scApp.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.scApp)).EndInit();
