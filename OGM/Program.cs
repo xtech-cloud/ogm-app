@@ -36,6 +36,7 @@ namespace OGM
             appFacade.form = appForm;
             framework.getStaticPipe().RegisterFacade(AppFacade.NAME, appFacade);
             AppView appView = new AppView();
+            appView.moduleMgr = moduleMgr;
             framework.getStaticPipe().RegisterView(AppView.NAME, appView);
 
             moduleMgr.logger = logger;

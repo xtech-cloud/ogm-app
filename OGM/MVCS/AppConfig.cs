@@ -9,7 +9,7 @@ namespace OGM
         public string domain { get; set; }
     }
 
-    class AppConfig : Config
+    public class AppConfig : Config
     {
         public override void Merge(string _content)
         {

@@ -7,6 +7,8 @@ namespace OGM
     {
         public const string NAME = "AppView";
 
+        public ModuleManager moduleMgr { get; set; }
+
         private AppFacade appFacade = null;
 
         protected override void preSetup()
@@ -28,9 +30,10 @@ namespace OGM
         {
             getLogger().Trace("attach view");
             Dictionary<string, object> data = _data as Dictionary<string, object>;
-            foreach (string path in data.Keys)
+            foreach (string uri in data.Keys)
             {
-                appFacade.form.AddPath(path, data[path]);
+                string path = moduleMgr.convertPath(uri);
+                appFacade.form.AddPath(path, data[uri]);
             }
         }
     }

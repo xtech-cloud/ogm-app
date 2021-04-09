@@ -4,7 +4,7 @@ using XTC.oelMVCS;
 
 namespace OGM
 {
-    class ConsoleLogger : Logger
+    public class ConsoleLogger : Logger
     {
         public System.Windows.Forms.RichTextBox rtbLog { get; set; }
         protected override void trace(string _categoray, string _message)

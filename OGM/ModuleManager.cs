@@ -14,11 +14,12 @@ namespace OGM
             public string entry { get; set; }
         }
         public string uri { get; set; }
+        public string path { get; set; }
         public string version { get; set; }
         public Library[] load { get; set; }
 
     }
-    class ModuleManager
+    public class ModuleManager
     {
         public ConsoleLogger logger { get; set; }
         public Framework framework { get; set; }
@@ -43,8 +44,8 @@ namespace OGM
                 mi.Invoke(instance, param);
             }
         }
-        private static Dictionary<string, Assembly> assemblyMap = new Dictionary<string, Assembly>();
-        private static Dictionary<string, string> pathMap = new Dictionary<string, string>();
+        private Dictionary<string, Assembly> assemblyMap = new Dictionary<string, Assembly>();
+        private Dictionary<string, string> pathMap = new Dictionary<string, string>();
 
         public ModuleManager()
         {
@@ -78,8 +79,9 @@ namespace OGM
                             miRegister.Invoke(instance, null);
                         }
                     }
+                    pathMap[meta.uri] = meta.path;
                 }
-                catch(System.Exception ex)
+                catch (System.Exception ex)
                 {
                     logger.Exception(ex);
                 }
@@ -89,6 +91,18 @@ namespace OGM
         public void Cancel()
         {
 
+        }
+
+        public string convertPath(string _uri)
+        {
+           foreach(string uri in pathMap.Keys)
+           {
+                if(_uri.StartsWith(uri))
+                {
+                    return _uri.Replace(uri, pathMap[uri]);
+                }
+           }
+            return _uri;
         }
 
         private Assembly assemblyResolve(object sender, ResolveEventArgs args)
