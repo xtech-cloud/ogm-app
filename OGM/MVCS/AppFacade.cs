@@ -6,6 +6,6 @@ namespace OGM
     {
         public const string NAME = "AppFacade";
 
-        public AppForm form { get; set; }
+        //public AppForm form { get; set; }
     }
 }

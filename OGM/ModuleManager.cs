@@ -55,7 +55,10 @@ namespace OGM
         public void Register()
         {
             string curDir = System.IO.Directory.GetCurrentDirectory();
-            foreach (string entry in Directory.GetDirectories(Path.Combine(curDir,"modules")))
+            string modulesDir = Path.Combine(curDir, "modules");
+            if (!Directory.Exists(modulesDir))
+                return;
+            foreach (string entry in Directory.GetDirectories(modulesDir))
             {
                 string metafile = Path.Combine(entry, "meta.json");
                 if(!File.Exists(metafile))

@@ -33,7 +33,7 @@ namespace OGM
             foreach (string uri in data.Keys)
             {
                 string path = moduleMgr.convertPath(uri);
-                appFacade.form.AddPath(path, data[uri]);
+                //appFacade.form.AddPath(path, data[uri]);
             }
         }
     }
