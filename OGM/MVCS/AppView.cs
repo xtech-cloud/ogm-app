@@ -10,7 +10,6 @@ namespace OGM
         public ModuleManager moduleMgr { get; set; }
 
         private AppFacade appFacade = null;
-
         protected override void preSetup()
         {
             appFacade = findFacade(AppFacade.NAME) as AppFacade;

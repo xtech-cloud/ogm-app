@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:local="clr-namespace:OGM"
         mc:Ignorable="d"
         Title="OGM"
         ResizeMode="CanResize"
@@ -19,6 +20,7 @@
         </hc:SimplePanel>
         <!-- 顶部 -->
         <hc:SimplePanel Height="72" Background="White" VerticalAlignment="Top" HorizontalAlignment="Stretch" Effect="{StaticResource EffectShadow2}" Margin="200,0,0,0" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+            <local:Titlebar></local:Titlebar>
         </hc:SimplePanel>
 
         <!-- 底部 -->
@@ -26,8 +28,12 @@
         </hc:SimplePanel>
 
         <!-- 左部 -->
-        <hc:SimplePanel Width="200" Background="White" HorizontalAlignment="Left" VerticalAlignment="Stretch" Effect="{StaticResource EffectShadow5}">
-        </hc:SimplePanel>
+        <StackPanel Width="200" Background="White" HorizontalAlignment="Left" VerticalAlignment="Stretch" Effect="{StaticResource EffectShadow5}">
+            <Image Height="72" Source="Resources/images/title-logo.png"></Image>
+            <hc:SideMenu>
+                
+            </hc:SideMenu>
+        </StackPanel>
     </hc:SimplePanel>
 
 </hc:GlowWindow>

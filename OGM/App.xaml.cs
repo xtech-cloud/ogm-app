@@ -10,6 +10,15 @@ namespace OGM
     {
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            MainWindow wnd = new MainWindow();
+            this.MainWindow = wnd;
+            wnd.Show();
+        }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
             ModuleManager moduleMgr = new ModuleManager();
 
             ConsoleLogger logger = new ConsoleLogger();
@@ -35,10 +44,11 @@ namespace OGM
             moduleMgr.Register();
 
             framework.Setup();
+        }
 
-            MainWindow wnd = new MainWindow();
-            this.MainWindow = wnd;
-            wnd.Show();
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
         }
 
     }

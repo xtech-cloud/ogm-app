@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <None Remove="Resources\app.ico" />
+    <None Remove="Resources\images\title-logo.png" />
+    <None Remove="Resources\svg\close.svg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +19,8 @@
 
   <ItemGroup>
     <Resource Include="Resources\app.ico" />
+    <Resource Include="Resources\images\title-logo.png" />
+    <Resource Include="Resources\svg\close.svg" />
   </ItemGroup>
 
 </Project>
