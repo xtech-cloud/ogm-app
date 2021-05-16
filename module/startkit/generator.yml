@@ -1,0 +1,11 @@
+#组织名
+org: ogm
+#模块名
+mod: startkit
+#布局
+layouts:
+-
+  #方法
+  method: Healthy.Echo
+  #页面
+  page: PostForm

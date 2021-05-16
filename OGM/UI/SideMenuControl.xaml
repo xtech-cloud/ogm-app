@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="OGM.SideMenuControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:local="clr-namespace:OGM"   
+             DataContext="{Binding RelativeSource={RelativeSource self}}"
+             Background="{DynamicResource RegionBrush}" Width="200">
+    <StackPanel>
+        <TextBlock HorizontalAlignment="Left" Margin="15 10" Text="终端产品" Style="{StaticResource TextBlockDefault}"/>
+        <hc:SideMenu AutoSelect="False" ExpandMode="Freedom">
+            <hc:Interaction.Triggers>
+                <hc:EventTrigger EventName="SelectionChanged">
+                    <hc:EventToCommand Command="{Binding SwitchItemCmd}" PassEventArgsToCommand="True" />
+                </hc:EventTrigger>
+            </hc:Interaction.Triggers>
+
+            <hc:SideMenuItem Header="榜样文化墙">
+                <hc:SideMenuItem Header="分时管控" Name="ScheduleControl">
+                    <hc:SideMenuItem.Icon>
+                        <TextBlock Text="&#xee6a;" />
+                    </hc:SideMenuItem.Icon>
+                </hc:SideMenuItem>
+                <hc:SideMenuItem Header="主题设置" Name="ThemeControl">
+                    <hc:SideMenuItem.Icon>
+                        <TextBlock Text="&#xee6a;" />
+                    </hc:SideMenuItem.Icon>
+                </hc:SideMenuItem>
+                <hc:SideMenuItem Header="统计分析" Name="AnalyticsControl">
+                    <hc:SideMenuItem.Icon>
+                        <TextBlock Text="&#xee6a;" />
+                    </hc:SideMenuItem.Icon>
+                </hc:SideMenuItem>
+            </hc:SideMenuItem>
+        </hc:SideMenu>
+    </StackPanel>
+</UserControl>

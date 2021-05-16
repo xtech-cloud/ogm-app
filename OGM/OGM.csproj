@@ -23,4 +23,8 @@
     <Resource Include="Resources\svg\close.svg" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Include="App.xaml" />
+  </ItemGroup>
+
 </Project>

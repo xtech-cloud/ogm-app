@@ -74,12 +74,10 @@ namespace OGM
                         assemblyMap[library.file] = assembly;
                         if (!string.IsNullOrEmpty(library.entry))
                         {
-                            object instance = assembly.CreateInstance(library.entry);
-                            Type t = assembly.GetType(library.entry);
-                            MethodInfo miInject = t.GetMethod("Inject");
-                            miInject.Invoke(instance, new object[] { framework });
-                            MethodInfo miRegister = t.GetMethod("Register");
-                            miRegister.Invoke(instance, null);
+                            //object instance = assembly.CreateInstance(library.entry);
+                            //Type t = assembly.GetType(library.entry);
+                            //MethodInfo miInject = t.GetMethod("Inject");
+                            //miInject.Invoke(instance, new object[] { framework });
                         }
                     }
                     pathMap[meta.uri] = meta.path;

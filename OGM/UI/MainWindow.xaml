@@ -16,7 +16,9 @@
                BorderThickness="0" WindowStyle="None" Icon="/Resources/app.ico"
         >
     <hc:SimplePanel Background="#FFF4F5FA">
+        <!-- 主内容 -->
         <hc:SimplePanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="200,72,0,72">
+            <local:MainContentControl />
         </hc:SimplePanel>
         <!-- 顶部 -->
         <hc:SimplePanel Height="72" Background="White" VerticalAlignment="Top" HorizontalAlignment="Stretch" Effect="{StaticResource EffectShadow2}" Margin="200,0,0,0" MouseLeftButtonDown="Window_MouseLeftButtonDown">
@@ -29,10 +31,8 @@
 
         <!-- 左部 -->
         <StackPanel Width="200" Background="White" HorizontalAlignment="Left" VerticalAlignment="Stretch" Effect="{StaticResource EffectShadow5}">
-            <Image Height="72" Source="Resources/images/title-logo.png"></Image>
-            <hc:SideMenu>
-                
-            </hc:SideMenu>
+            <Image Height="72" Source="../Resources/images/title-logo.png"></Image>
+            <local:SideMenuControl />
         </StackPanel>
     </hc:SimplePanel>
 
