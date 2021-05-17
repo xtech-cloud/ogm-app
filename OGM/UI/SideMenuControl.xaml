@@ -5,32 +5,146 @@
              xmlns:local="clr-namespace:OGM"   
              DataContext="{Binding RelativeSource={RelativeSource self}}"
              Background="{DynamicResource RegionBrush}" Width="200">
-    <StackPanel>
-        <TextBlock HorizontalAlignment="Left" Margin="15 10" Text="终端产品" Style="{StaticResource TextBlockDefault}"/>
-        <hc:SideMenu AutoSelect="False" ExpandMode="Freedom">
-            <hc:Interaction.Triggers>
-                <hc:EventTrigger EventName="SelectionChanged">
-                    <hc:EventToCommand Command="{Binding SwitchItemCmd}" PassEventArgsToCommand="True" />
-                </hc:EventTrigger>
-            </hc:Interaction.Triggers>
+    <UserControl.Resources>
+        <XmlDataProvider x:Key="dataProvider" XPath="Menu">
+            <x:XData>
+                <Menu xmlns="">
+                    <Group Text="终端产品1">
+                        <Section Text="榜样文化墙" Icon="/Resources/icons/MeeTouch.png">
+                            <Tab Text="分时管控" Icon="" Name="" Entry="" />
+                            <Tab Text="主题设置" Icon="" Name="" Entry="" />
+                            <Tab Text="统计分析" Icon="" Name="" Entry="" />
+                        </Section>
+                    </Group>
+                    <Group Text="终端产品2">
+                        <Section Text="榜样文化墙" Icon="/Resources/icons/MeeTouch.png">
+                            <Tab Text="分时管控" Icon="" Name="" Entry="" />
+                            <Tab Text="主题设置" Icon="" Name="" Entry="" />
+                            <Tab Text="统计分析" Icon="" Name="" Entry="" />
+                        </Section>
+                    </Group>
+                </Menu>
+            </x:XData>
+        </XmlDataProvider>
 
+        <ControlTemplate  x:Key="sidemenu_Template" TargetType="{x:Type hc:SideMenu}">
+            <ItemsPresenter />
+        </ControlTemplate>
+
+        <DataTemplate x:Key="sidemenu_ItemTemplate">
             <hc:SideMenuItem Header="榜样文化墙">
+                <hc:SideMenuItem.Icon>
+                    <Image Source="/Resources/icons/MeeTouch.png" Width="24" Height="24"/>
+                </hc:SideMenuItem.Icon>
                 <hc:SideMenuItem Header="分时管控" Name="ScheduleControl">
                     <hc:SideMenuItem.Icon>
-                        <TextBlock Text="&#xee6a;" />
+                        <TextBlock Text="&#xee6a;"/>
                     </hc:SideMenuItem.Icon>
                 </hc:SideMenuItem>
                 <hc:SideMenuItem Header="主题设置" Name="ThemeControl">
                     <hc:SideMenuItem.Icon>
-                        <TextBlock Text="&#xee6a;" />
+                        <TextBlock Text="&#xee6a;"/>
                     </hc:SideMenuItem.Icon>
                 </hc:SideMenuItem>
                 <hc:SideMenuItem Header="统计分析" Name="AnalyticsControl">
                     <hc:SideMenuItem.Icon>
-                        <TextBlock Text="&#xee6a;" />
+                        <TextBlock Text="&#xee6a;"/>
                     </hc:SideMenuItem.Icon>
                 </hc:SideMenuItem>
             </hc:SideMenuItem>
-        </hc:SideMenu>
-    </StackPanel>
+        </DataTemplate>
+
+        <ControlTemplate  x:Key="group_Template" TargetType="{x:Type ItemsControl}">
+            <ItemsPresenter />
+        </ControlTemplate>
+
+        <ItemsPanelTemplate x:Key="group_ItemsPanel">
+            <StackPanel/>
+        </ItemsPanelTemplate>
+
+        <DataTemplate x:Key="group_ItemTemplate">
+            <StackPanel>
+                <TextBlock HorizontalAlignment="Left" Margin="15 10" Text="{Binding XPath=@Text}" Style="{StaticResource TextBlockDefault}"/>
+                <hc:SideMenu AutoSelect="False" ExpandMode="Freedom" ItemsSource="{Binding XPath=Section/Tab}">
+                    <hc:SideMenu.ItemTemplate>
+                        <DataTemplate>
+                            <hc:SideMenuItem Header="{Binding XPath=@Text}">
+                                <hc:SideMenuItem.Icon>
+                                    <Image Source="/Resources/icons/MeeTouch.png" Width="24" Height="24"/>
+                                </hc:SideMenuItem.Icon>
+                                <hc:SideMenuItem Header="分时管控" Name="ScheduleControl">
+                                    <hc:SideMenuItem.Icon>
+                                        <TextBlock Text="&#xee6a;"/>
+                                    </hc:SideMenuItem.Icon>
+                                </hc:SideMenuItem>
+                                <hc:SideMenuItem Header="主题设置" Name="ThemeControl">
+                                    <hc:SideMenuItem.Icon>
+                                        <TextBlock Text="&#xee6a;"/>
+                                    </hc:SideMenuItem.Icon>
+                                </hc:SideMenuItem>
+                                <hc:SideMenuItem Header="统计分析" Name="AnalyticsControl">
+                                    <hc:SideMenuItem.Icon>
+                                        <TextBlock Text="&#xee6a;"/>
+                                    </hc:SideMenuItem.Icon>
+                                </hc:SideMenuItem>
+                            </hc:SideMenuItem>
+                        </DataTemplate>
+                    </hc:SideMenu.ItemTemplate>
+                </hc:SideMenu>
+                <ListBox ItemsSource="{Binding XPath=Section/Tab}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock HorizontalAlignment="Left" Margin="15 10" Text="{Binding XPath=@Text}" Style="{StaticResource TextBlockDefault}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </DataTemplate>
+
+    </UserControl.Resources>
+
+    <ItemsControl Name="menu" 
+                  ItemsSource="{Binding Source={StaticResource dataProvider}, XPath=Group}" 
+                  Template="{StaticResource group_Template}" 
+                  ItemsPanel="{StaticResource group_ItemsPanel}" 
+                  ItemTemplate="{StaticResource group_ItemTemplate}">
+    </ItemsControl>
+    <!--
+    <ItemsControl ItemsSource="{Binding Source={StaticResource dataProvider}, XPath=Group/Text}">
+        <ItemsControl.Template>
+            <ControlTemplate TargetType="ItemsControl">
+                <StackPanel>
+                    <TextBlock HorizontalAlignment="Left" Margin="15 10" Text="{Binding Text}" Style="{StaticResource TextBlockDefault}"/>
+                    <hc:SideMenu AutoSelect="False" ExpandMode="Freedom">
+                        <hc:Interaction.Triggers>
+                            <hc:EventTrigger EventName="SelectionChanged">
+                                <hc:EventToCommand Command="{Binding SwitchItemCmd}" PassEventArgsToCommand="True" />
+                            </hc:EventTrigger>
+                        </hc:Interaction.Triggers>
+                        <hc:SideMenuItem Header="榜样文化墙">
+                            <hc:SideMenuItem.Icon>
+                                <Image Source="/Resources/icons/MeeTouch.png" Width="24" Height="24"/>
+                            </hc:SideMenuItem.Icon>
+                            <hc:SideMenuItem Header="分时管控" Name="ScheduleControl">
+                                <hc:SideMenuItem.Icon>
+                                    <TextBlock Text="&#xee6a;"/>
+                                </hc:SideMenuItem.Icon>
+                            </hc:SideMenuItem>
+                            <hc:SideMenuItem Header="主题设置" Name="ThemeControl">
+                                <hc:SideMenuItem.Icon>
+                                    <TextBlock Text="&#xee6a;"/>
+                                </hc:SideMenuItem.Icon>
+                            </hc:SideMenuItem>
+                            <hc:SideMenuItem Header="统计分析" Name="AnalyticsControl">
+                                <hc:SideMenuItem.Icon>
+                                    <TextBlock Text="&#xee6a;"/>
+                                </hc:SideMenuItem.Icon>
+                            </hc:SideMenuItem>
+                        </hc:SideMenuItem>
+                    </hc:SideMenu>
+                </StackPanel>
+            </ControlTemplate>
+        </ItemsControl.Template>
+    </ItemsControl>
+    -->
 </UserControl>

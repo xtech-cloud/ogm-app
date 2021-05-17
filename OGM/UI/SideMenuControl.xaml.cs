@@ -1,5 +1,9 @@
 ﻿using HandyControl.Controls;
 using HandyControl.Data;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace OGM
@@ -13,6 +17,14 @@ namespace OGM
         }
 
         public SideMenuFacade facade { get; set; }
+
+        private List<TabItem> TabItems_ = new List<TabItem>();
+        private List<TabItem> TabItems
+        {
+            get { return TabItems_; }
+            set { TabItems_ = value; }
+        }
+
 
         public SideMenuControl()
         {
