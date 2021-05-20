@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package xtc.ogm.startkit;
+
+service MyHealthy
+{
+    rpc Echo(Request) returns (Response) {}
+}
+
+message Status
+{
+    int32 code = 1;
+    string message = 2;
+}
+
+message Request
+{
+    string msg = 1;
+}
+
+message Response
+{
+    Status status = 1;
+    string msg = 2;
+}

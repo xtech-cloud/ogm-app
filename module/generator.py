@@ -1662,6 +1662,9 @@ for entry in os.listdir(proto_dir):
     # 跳过不是.proto的文件
     if not entry.endswith(".proto"):
         continue
+    # 跳过health
+    if entry == "healthy.proto":
+        continue
     proto_name = os.path.splitext(entry)[0]
     with open(os.path.join(proto_dir, entry), "r", encoding="utf-8") as rf:
         content = rf.read()
