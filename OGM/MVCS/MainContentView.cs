@@ -5,6 +5,8 @@ namespace OGM
 {
     public class MainContentView : View
     {
+        private Dictionary<string, object> controls = new Dictionary<string, object>();
+
         public class MainContentViewBridge : IMainContentViewBridge
         {
             public MainContentView view { get; set; }
@@ -32,7 +34,8 @@ namespace OGM
 
         private void handleTabActivated(Model.Status _status, object _data)
         {
-            string page = (string)_data;
+            object page = null;
+            controls.TryGetValue((string)_data, out page);
             (myFacade.getUiBridge() as IMainContentUiBridge).SwitchPage(page);
         }
 
@@ -40,10 +43,9 @@ namespace OGM
         {
             getLogger().Trace("attach view");
             Dictionary<string, object> data = _data as Dictionary<string, object>;
-            foreach (string uri in data.Keys)
+            foreach (string fullname in data.Keys)
             {
-                string path = moduleMgr.convertPath(uri);
-                //appFacade.form.AddPath(path, data[uri]);
+                controls[fullname] = data[fullname];
             }
         }
     }

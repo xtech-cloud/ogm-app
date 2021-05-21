@@ -13,15 +13,9 @@ namespace OGM
         {
             public MainContentControl control { get; set; }
 
-            public void SwitchPage(string _page)
+            public void SwitchPage(object _page)
             {
-                var obj = AssemblyHelper.ResolveByKey(_page);
-                var ctl = obj ?? AssemblyHelper.CreateInternalInstance($"UI.{_page}");
-                if (control.SubContent is IDisposable disposable)
-                {
-                    disposable.Dispose();
-                }
-                control.SubContent = ctl;
+                control.SubContent = _page;
             }
         }
 

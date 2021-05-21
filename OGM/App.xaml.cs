@@ -14,6 +14,9 @@ namespace OGM
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            // 加载模块
+            moduleMgr_.Load();
+
             // 静态管线注册组件
             registerMVCS();
             registerFacade();
@@ -50,6 +53,7 @@ namespace OGM
         protected override void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);
+            moduleMgr_.Unload();
             moduleMgr_.Cancel();
             framework_.Release();
             framework_ = null;

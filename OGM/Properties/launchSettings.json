@@ -2,7 +2,7 @@
   "profiles": {
     "OGM": {
       "commandName": "Project",
-      "workingDirectory": "D:\\github-ogm\\ogm-app\\_runpath"
+      "workingDirectory": "D:\\SyncDriver\\_Runpath\\ogm-app"
     }
   }
 }

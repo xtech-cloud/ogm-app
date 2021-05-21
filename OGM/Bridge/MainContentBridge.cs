@@ -8,6 +8,6 @@ namespace OGM
 
     public interface IMainContentUiBridge : View.Facade.Bridge
     {
-        void SwitchPage(string _page);
+        void SwitchPage(object _page);
     }
 }

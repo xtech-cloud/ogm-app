@@ -6,23 +6,18 @@ using XTC.oelMVCS;
 
 namespace OGM
 {
-    class Meta
-    {
-        public class Library
-        {
-            public string file { get; set; }
-            public string entry { get; set; }
-        }
-        public string uri { get; set; }
-        public string path { get; set; }
-        public string version { get; set; }
-        public Library[] load { get; set; }
-
-    }
     public class ModuleManager
     {
-        public ConsoleLogger logger { get; set; }
-        public Framework framework { get; set; }
+        public ConsoleLogger logger
+        {
+            get;
+            set;
+        }
+        public Framework framework
+        {
+            get;
+            set;
+        }
 
         public class Module
         {
@@ -45,65 +40,68 @@ namespace OGM
             }
         }
         private Dictionary<string, Assembly> assemblyMap = new Dictionary<string, Assembly>();
-        private Dictionary<string, string> pathMap = new Dictionary<string, string>();
 
         public ModuleManager()
         {
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(assemblyResolve);
         }
 
-        public void Register()
+        public void Load()
         {
             string curDir = System.IO.Directory.GetCurrentDirectory();
             string modulesDir = Path.Combine(curDir, "modules");
             if (!Directory.Exists(modulesDir))
                 return;
-            foreach (string entry in Directory.GetDirectories(modulesDir))
+
+            foreach (string entry in Directory.GetFiles(modulesDir))
             {
-                string metafile = Path.Combine(entry, "meta.json");
-                if(!File.Exists(metafile))
+                Assembly assembly = Assembly.LoadFile(entry);
+                if (null == assembly)
                     continue;
-                string json  = File.ReadAllText(metafile);
-                try
+
+                string filename = Path.GetFileName(entry);
+                assemblyMap[filename] = assembly;
+            }
+        }
+
+        public void Unload()
+        {
+
+        }
+
+        public void Register()
+        {
+            foreach(string filename in assemblyMap.Keys)
+            {
+                string rootClass = "";
+                if (filename.EndsWith(".module.dll"))
                 {
-                    Meta meta = System.Text.Json.JsonSerializer.Deserialize<Meta>(json);
-                    foreach (Meta.Library library in meta.load)
-                    {
-                        string assemblyFile = Path.Combine(entry, library.file);
-                        Assembly assembly = Assembly.LoadFile(assemblyFile);
-                        assemblyMap[library.file] = assembly;
-                        if (!string.IsNullOrEmpty(library.entry))
-                        {
-                            //object instance = assembly.CreateInstance(library.entry);
-                            //Type t = assembly.GetType(library.entry);
-                            //MethodInfo miInject = t.GetMethod("Inject");
-                            //miInject.Invoke(instance, new object[] { framework });
-                        }
-                    }
-                    pathMap[meta.uri] = meta.path;
+                    string ns = filename.Substring(0, filename.Length - ".module.dll".Length);
+                    rootClass = string.Format("{0}.ModuleRoot", ns);
                 }
-                catch (System.Exception ex)
+                else if (filename.EndsWith(".wpf.dll"))
                 {
-                    logger.Exception(ex);
+                    string ns = filename.Substring(0, filename.Length - ".wpf.dll".Length);
+                    rootClass = string.Format("{0}.ControlRoot", ns);
                 }
+                else
+                {
+                    continue;
+                }
+
+                Assembly assembly = assemblyMap[filename];
+                object instance = assembly.CreateInstance(rootClass);
+                Type t = assembly.GetType(rootClass);
+                MethodInfo miInject = t.GetMethod("Inject");
+                miInject.Invoke(instance, new object[] { framework });
+                MethodInfo miRegister = t.GetMethod("Register");
+                miRegister.Invoke(instance, null);
             }
         }
 
         public void Cancel()
         {
 
-        }
-
-        public string convertPath(string _uri)
-        {
-           foreach(string uri in pathMap.Keys)
-           {
-                if(_uri.StartsWith(uri))
-                {
-                    return _uri.Replace(uri, pathMap[uri]);
-                }
-           }
-            return _uri;
         }
 
         private Assembly assemblyResolve(object sender, ResolveEventArgs args)

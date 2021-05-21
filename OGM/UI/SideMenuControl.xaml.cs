@@ -51,9 +51,10 @@ namespace OGM
 
         private void SwitchItemCmd_Execute(FunctionEventArgs<object> _args)
         {
-            string name = (_args.Info as SideMenuItem)?.Name;
+            SideMenuItem item = _args.Info as SideMenuItem;
+            string entry = (string)item.FindResource("Entry");
             ISideMenuViewBridge bridge = facade.getViewBridge() as ISideMenuViewBridge;
-            bridge.OnTabActivated(name);
+            bridge.OnTabActivated(entry);
             _args.Handled = true;
         }
         public bool SwitchItemCmd_CanExecute(FunctionEventArgs<object> _args)
@@ -114,7 +115,7 @@ namespace OGM
 
                         // tab
                         SideMenuItem itemTab = new SideMenuItem();
-                        itemTab.Name = ((XmlElement)node_tab).GetAttribute("Entry");
+                        itemTab.Resources.Add("Entry", ((XmlElement)node_tab).GetAttribute("Entry"));
                         itemTab.Padding = new System.Windows.Thickness(24, 0, 0, 0);
                         itemTab.Header = ((XmlElement)node_tab).GetAttribute("Text");
                         System.Windows.Controls.Image iconTab = new System.Windows.Controls.Image();
