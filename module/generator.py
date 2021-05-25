@@ -66,21 +66,21 @@ EndGlobal
 """
 
 template_proj_app = r"""
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="oelMVCS" Version="1.1.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\module\module.csproj" />
     <ProjectReference Include="..\wpf\wpf.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="oelMVCS" Version="1.1.0" />
   </ItemGroup>
 
 </Project>
@@ -141,19 +141,6 @@ template_proj_wpf = r"""
 </Project>
 """
 
-template_app_AppFacade_cs = r"""
-using XTC.oelMVCS;
-
-namespace app
-{
-    class AppFacade : View.Facade
-    {
-        public const string NAME = "AppFacade";
-        public RootForm rootForm { get; set; }
-    }//class
-}//namespace
-"""
-
 template_app_AppView_cs = r"""
 using System.Collections.Generic;
 using XTC.oelMVCS;
@@ -164,11 +151,8 @@ namespace app
     {
         public const string NAME = "AppView";
 
-        private AppFacade appFacade = null;
-
         protected override void preSetup()
         {
-            appFacade = findFacade(AppFacade.NAME) as AppFacade;
         }
 
         protected override void setup()
@@ -178,11 +162,12 @@ namespace app
 
         private void handleAttachView(Model.Status _status, object _data)
         {
+            MainWindow mainWindow = App.Current.MainWindow as MainWindow;
             getLogger().Trace("attach view");
             Dictionary<string, object> data = _data as Dictionary<string, object>;
-            foreach(string path in data.Keys)
+            foreach(string key in data.Keys)
             {
-                appFacade.rootForm.AddPath(path, data[path]);
+                mainWindow.AddPage(key, data[key]);
             }
         }
     }//class
@@ -211,360 +196,240 @@ namespace app
 """
 
 template_app_ConsoleLogger_cs = r"""
-
-
-
 using System;
-using System.Drawing;
+using System.Windows.Documents;
+using System.Windows.Media;
 using XTC.oelMVCS;
 
 namespace app
 {
     class ConsoleLogger : Logger
     {
-        public System.Windows.Forms.RichTextBox rtbLog { get; set; }
+        public System.Windows.Controls.RichTextBox rtbLog { get; set; }
         protected override void trace(string _categoray, string _message)
         {
-            if (rtbLog.IsDisposed)
-                return;
-            this.appendTextColorful(string.Format("TRACE | {0} > {1}", _categoray, _message), Color.Gray);
+            this.appendTextColorful(string.Format("TRACE | {0} > {1}", _categoray, _message), Colors.Gray);
         }
 
         protected override void debug(string _categoray, string _message)
         {
-            if (rtbLog.IsDisposed)
-                return;
-            this.appendTextColorful(string.Format("DEBUG | {0} > {1}", _categoray, _message), Color.Blue);
+            this.appendTextColorful(string.Format("DEBUG | {0} > {1}", _categoray, _message), Colors.Blue);
         }
 
         protected override void info(string _categoray, string _message)
         {
-            if (rtbLog.IsDisposed)
-                return;
-            this.appendTextColorful(string.Format("INFO | {0} > {1}", _categoray, _message), Color.Green);
+            this.appendTextColorful(string.Format("INFO | {0} > {1}", _categoray, _message), Colors.Green);
         }
 
         protected override void warning(string _categoray, string _message)
         {
-            if (rtbLog.IsDisposed)
-                return;
-            this.appendTextColorful(string.Format("WARN | {0} > {1}", _categoray, _message), Color.Orange);
+            this.appendTextColorful(string.Format("WARN | {0} > {1}", _categoray, _message), Colors.Orange);
         }
 
         protected override void error(string _categoray, string _message)
         {
-            if (rtbLog.IsDisposed)
-                return;
-            this.appendTextColorful(string.Format("ERROR | {0} > {1}", _categoray, _message), Color.Red);
+            this.appendTextColorful(string.Format("ERROR | {0} > {1}", _categoray, _message), Colors.Red);
         }
 
         protected override void exception(Exception _exception)
         {
-            if (rtbLog.IsDisposed)
-                return;
-            this.appendTextColorful(string.Format("EXCEPT | > {0}", _exception.ToString()), Color.Purple);
+            this.appendTextColorful(string.Format("EXCEPT | > {0}", _exception.ToString()), Colors.Purple);
         }
 
         private void appendTextColorful(string addtext, Color color)
         {
-            addtext += Environment.NewLine;
-            rtbLog.SelectionStart = rtbLog.TextLength;
-            rtbLog.SelectionLength = 0;
-            rtbLog.SelectionColor = color;
-            rtbLog.AppendText(addtext);
+            var p = new Paragraph();
+            var r = new Run(addtext);
+            p.Inlines.Add(r);
+            p.Foreground = new SolidColorBrush(color);
+            rtbLog.Document.Blocks.Add(p);
         }
     }//class
 }//namespace
+
 """
 
-template_app_Program_cs = r"""
-
-using System;
-using System.Windows.Forms;
+template_app_app_xaml_cs = r"""
+using System.Windows;
+using XTC.oelMVCS;
 using {{org}}.{{mod}};
+
+namespace app
+{
+    /// <summary>
+    /// Interaction logic for App.xaml
+    /// </summary>
+    public partial class App : Application
+    {
+        private Framework framework_ { get; set; }
+        private ConsoleLogger logger_ { get; set; }
+        private Config config_ { get; set; }
+
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            // 静态管线注册组件
+            registerMVCS();
+
+            ModuleRoot moduleRoot = new ModuleRoot();
+            moduleRoot.Inject(framework_);
+            moduleRoot.Register();
+            ControlRoot controlRoot = new ControlRoot();
+            controlRoot.Inject(framework_);
+            controlRoot.Register();
+            framework_.Setup();
+        }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            logger_ = new ConsoleLogger();
+            config_ = new AppConfig();
+
+            MainWindow mainWindow = new MainWindow();
+            this.MainWindow = mainWindow;
+            logger_.rtbLog = mainWindow.rtbLog;
+            mainWindow.Show();
+
+            framework_ = new Framework();
+            framework_.setLogger(logger_);
+            framework_.setConfig(config_);
+            framework_.Initialize();
+
+            base.OnStartup(e);
+
+            
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+            framework_.Release();
+            framework_ = null;
+        }
+
+        private void registerMVCS()
+        {
+            BlankModel blankModel = new BlankModel();
+            framework_.getStaticPipe().RegisterModel(BlankModel.NAME, blankModel);
+
+            AppView appView = new AppView();
+            framework_.getStaticPipe().RegisterView(AppView.NAME, appView);
+        }
+    }
+}
+
+"""
+
+template_app_app_xaml = r"""
+<Application x:Class="app.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:app" 
+             Startup="Application_Startup" ShutdownMode="OnMainWindowClose">
+    <Application.Resources>
+         
+    </Application.Resources>
+</Application>
+
+"""
+
+template_app_mainwindow_xaml_cs = r"""
+using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Controls;
+
+
+namespace app
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public RichTextBox log { get; private set; }
+
+        public static readonly DependencyProperty SubContentProperty = DependencyProperty.Register("SubContent", typeof(object), typeof(MainWindow));
+        public object SubContent
+        {
+            get
+            {
+                return GetValue(MainWindow.SubContentProperty);
+            }
+            set
+            {
+                SetValue(MainWindow.SubContentProperty, value);
+            }
+        }
+
+        private Dictionary<string, object> pages = new Dictionary<string, object>();
+
+        public MainWindow()
+        {
+            InitializeComponent();
+            log = this.rtbLog;
+        }
+
+        public void AddPage(string _key, object _page)
+        {
+            pages[_key] = _page;
+            lbPages.Items.Add(_key);
+        }
+
+        private void lbPages_Selected(object sender, RoutedEventArgs e)
+        {
+            string lbi = lbPages.SelectedItem as string;
+            SubContent = pages[lbi];
+        }
+    }
+}
+
+"""
+
+template_app_mainwindow_xaml = r"""
+<Window x:Class="app.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:app"
+        mc:Ignorable="d"
+        DataContext="{Binding RelativeSource={RelativeSource self}}"
+        Title="MainWindow" Height="450" Width="800">
+
+    <DockPanel>
+        <ListBox x:Name="lbPages" Margin="12" Width="200" DockPanel.Dock="Left" SelectionChanged="lbPages_Selected">
+        </ListBox>
+        <RichTextBox Name="rtbLog" Margin="12" Height="120" IsReadOnly="True"  DockPanel.Dock="Bottom"></RichTextBox>
+        <UserControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="12">
+            <ContentPresenter Name="PresenterMain" Content="{Binding SubContent}"/>
+        </UserControl>
+    </DockPanel>
+</Window>
+"""
+
+
+template_app_AssemblyInfo_cs = r"""
+using System.Windows;
+
+[assembly: ThemeInfo(
+    ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
+                                     //(used if a resource is not found in the page,
+                                     // or application resource dictionaries)
+    ResourceDictionaryLocation.SourceAssembly //where the generic resource dictionary is located
+                                              //(used if a resource is not found in the page,
+                                              // app, or any theme specific resource dictionaries)
+)]
+"""
+
+template_app_blankmodel_cs = r"""
 using XTC.oelMVCS;
 
 namespace app
 {
-    static class Program
+    public class BlankModel : Model
     {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            Application.SetHighDpiMode(HighDpiMode.SystemAware);
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            RootForm rootForm = new RootForm();
-
-            ConsoleLogger logger = new ConsoleLogger();
-            logger.rtbLog = rootForm.getLoggerUi();
-            Config config = new AppConfig();
-            ConfigSchema schema = new ConfigSchema();
-            schema.domain = rootForm.getDomainUi().Text;
-            config.Merge(System.Text.Json.JsonSerializer.Serialize(schema));
-            Framework framework = new Framework();
-            framework.setLogger(logger);
-            framework.setConfig(config);
-            framework.Initialize();
-
-            AppFacade appFacade = new AppFacade();
-            appFacade.rootForm = rootForm;
-            framework.getStaticPipe().RegisterFacade(AppFacade.NAME, appFacade);
-            AppView appView = new AppView();
-            framework.getStaticPipe().RegisterView(AppView.NAME, appView);
-
-            // 注册模块窗体
-            FormRoot formRoot = new FormRoot();
-            formRoot.Inject(framework);
-            formRoot.Register();
-            // 注册模块逻辑
-            ModuleRoot moduleRoot = new ModuleRoot();
-            moduleRoot.Inject(framework);
-            moduleRoot.Register();
-
-            framework.Setup();
-
-            Application.Run(rootForm);
-
-            moduleRoot.Cancel();
-            formRoot.Cancel();
-
-            framework.Dismantle();
-            framework.Release();
-        }
+        public const string NAME = "BlankModel";
     }
 }
-"""
-
-template_app_RootForm_cs = r"""
-using System.Collections.Generic;
-using System.Windows.Forms;
-
-namespace app
-{
-    public class RootForm: Form
-    {
-        public RootForm()
-        {
-            InitializeComponent();
-        }
-
-        public RichTextBox getLoggerUi()
-        {
-            return this.rtbLog;
-        }
-
-        public TextBox getDomainUi()
-        {
-            return this.tbDomain;
-        }
-
-        private TabControl tcPages;
-        private TreeView tvPages;
-        private Dictionary<string, TabPage> pages = new Dictionary<string, TabPage>();
-        private RichTextBox rtbLog;
-        private TextBox tbDomain;
-
-        /// <summary>
-        /// 必需的设计器变量。
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
-
-        /// <summary>
-        /// 清理所有正在使用的资源。
-        /// </summary>
-        /// <param name="disposing">如果应释放托管资源，为 true；否则为 false。</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
-        public void AddPath(string _path, object _page)
-        {
-            ContainerControl page = _page as ContainerControl;
-            //this.Controls.Add(panel);
-            string[] sections = _path.Split("/");
-            var nodes = this.tvPages.Nodes;
-            foreach(string section in sections)
-            {
-                if(string.IsNullOrEmpty(section))
-                    continue;
-                var found = nodes.Find(section, false);
-                if(found.Length == 0)
-                {
-                    TreeNode newNode = new TreeNode();
-                    newNode.Name = section;
-                    newNode.Text = section;
-                    nodes.Add(newNode);
-                    found = new TreeNode[]{newNode};
-                }
-                nodes = found[0].Nodes;
-            }
-            TabPage tabPage = new TabPage();
-            tabPage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            tabPage.Location = new System.Drawing.Point(10, 10);
-            tabPage.Name = _path;
-            tabPage.Padding = new System.Windows.Forms.Padding(3);
-            tabPage.Size = new System.Drawing.Size(760, 660);
-            tabPage.TabIndex = 0;
-            tabPage.Text = _path;
-            tabPage.UseVisualStyleBackColor = true;
-            tabPage.Controls.Add(page);
-            this.tcPages.Controls.Add(tabPage);
-            this.pages[_path] = tabPage;
-            this.tvPages.ExpandAll();
-        }
-
-        private void InitializeComponent()
-        {
-            this.tcPages = new System.Windows.Forms.TabControl();
-            this.tvPages = new System.Windows.Forms.TreeView();
-            this.rtbLog = new System.Windows.Forms.RichTextBox();
-            this.tbDomain = new System.Windows.Forms.TextBox();
-            this.SuspendLayout();
-            // 
-            // tcPages
-            // 
-            this.tcPages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tcPages.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
-            this.tcPages.ItemSize = new System.Drawing.Size(0, 1);
-            this.tcPages.Location = new System.Drawing.Point(216, 61);
-            this.tcPages.Name = "tcPages";
-            this.tcPages.SelectedIndex = 0;
-            this.tcPages.Size = new System.Drawing.Size(780, 468);
-            this.tcPages.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
-            this.tcPages.TabIndex = 1;
-            // 
-            // tvPages
-            // 
-            this.tvPages.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.tvPages.Location = new System.Drawing.Point(13, 20);
-            this.tvPages.Name = "tvPages";
-            this.tvPages.PathSeparator = "/";
-            this.tvPages.Size = new System.Drawing.Size(188, 509);
-            this.tvPages.TabIndex = 2;
-            this.tvPages.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvPages_AfterSelect);
-            // 
-            // rtbLog
-            // 
-            this.rtbLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.rtbLog.Location = new System.Drawing.Point(13, 547);
-            this.rtbLog.Name = "rtbLog";
-            this.rtbLog.Size = new System.Drawing.Size(983, 170);
-            this.rtbLog.TabIndex = 3;
-            this.rtbLog.Text = "";
-            // 
-            // tbDomain
-            // 
-            this.tbDomain.Location = new System.Drawing.Point(231, 20);
-            this.tbDomain.Name = "tbDomain";
-            this.tbDomain.Size = new System.Drawing.Size(416, 23);
-            this.tbDomain.TabIndex = 4;
-            this.tbDomain.Text = "http://localhost:8080";
-            // 
-            // RootForm
-            // 
-            this.ClientSize = new System.Drawing.Size(1008, 729);
-            this.Controls.Add(this.tbDomain);
-            this.Controls.Add(this.rtbLog);
-            this.Controls.Add(this.tvPages);
-            this.Controls.Add(this.tcPages);
-            this.Name = "RootForm";
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
-        }
-
-        private void tvPages_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            TreeNode node = e.Node;
-            if (node.Nodes.Count > 0)
-                return;
-            string fullpath = "/" + node.FullPath;
-            TabPage page;
-            if (!this.pages.TryGetValue(fullpath, out page))
-                return;
-            this.tcPages.SelectedTab = page;
-        }
-    }
-
-}
-"""
-
-template_app_RootForm_resx = r"""
-<root>
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-</root>
 """
 
 templete_bridge_view_cs = r"""
@@ -1652,19 +1517,17 @@ with open("./vs2019/app/app.csproj", "w", encoding="utf-8") as wf:
     wf.write(template_proj_app)
     wf.close()
 
-# 生成AppFacade.cs
-with open("./vs2019/app/AppFacade.cs", "w", encoding="utf-8") as wf:
-    wf.write(template_app_AppFacade_cs)
+# 生成App.xaml
+with open("./vs2019/app/App.xaml", "w", encoding="utf-8") as wf:
+    wf.write(template_app_app_xaml)
     wf.close()
 
-# 生成AppView.cs
-with open("./vs2019/app/AppView.cs", "w", encoding="utf-8") as wf:
-    wf.write(template_app_AppView_cs)
-    wf.close()
-
-# 生成ConsoleLogger.cs
-with open("./vs2019/app/ConsoleLogger.cs", "w", encoding="utf-8") as wf:
-    wf.write(template_app_ConsoleLogger_cs)
+# 生成App.xaml.cs
+with open("./vs2019/app/App.xaml.cs", "w", encoding="utf-8") as wf:
+    code = template_app_app_xaml_cs
+    code = code.replace("{{org}}", org_name)
+    code = code.replace("{{mod}}", mod_name)
+    wf.write(code)
     wf.close()
 
 # 生成AppConfig.cs
@@ -1672,24 +1535,34 @@ with open("./vs2019/app/AppConfig.cs", "w", encoding="utf-8") as wf:
     wf.write(template_app_AppConfig_cs)
     wf.close()
 
-
-# 生成Program.cs
-with open("./vs2019/app/Program.cs", "w", encoding="utf-8") as wf:
-    wf.write(
-            template_app_Program_cs.replace("{{org}}", org_name).replace(
-                "{{mod}}", mod_name
-                )
-            )
+# 生成AppView.cs
+with open("./vs2019/app/AppView.cs", "w", encoding="utf-8") as wf:
+    wf.write(template_app_AppView_cs)
     wf.close()
 
-# 生成RootForm.cs
-with open("./vs2019/app/RootForm.cs", "w", encoding="utf-8") as wf:
-    wf.write(template_app_RootForm_cs)
+# 生成AssemblyInfo.cs
+with open("./vs2019/app/AssemblyInfo", "w", encoding="utf-8") as wf:
+    wf.write(template_app_AssemblyInfo_cs)
     wf.close()
 
-# 生成RootForm.resx
-with open("./vs2019/app/RootForm.resx", "w", encoding="utf-8") as wf:
-    wf.write(template_app_RootForm_resx)
+# 生成BlankModel.cs
+with open("./vs2019/app/BlankModel.cs", "w", encoding="utf-8") as wf:
+    wf.write(template_app_blankmodel_cs)
+    wf.close()
+
+# 生成ConsoleLogger.cs
+with open("./vs2019/app/ConsoleLogger.cs", "w", encoding="utf-8") as wf:
+    wf.write(template_app_ConsoleLogger_cs)
+    wf.close()
+
+# 生成MainWindow.xaml
+with open("./vs2019/app/MainWindow.xaml", "w", encoding="utf-8") as wf:
+    wf.write(template_app_mainwindow_xaml)
+    wf.close()
+
+# 生成MainWindow.xaml.cs
+with open("./vs2019/app/MainWindow.xaml.cs", "w", encoding="utf-8") as wf:
+    wf.write(template_app_mainwindow_xaml_cs)
     wf.close()
 
 # -----------------------------------------------------------------------------
