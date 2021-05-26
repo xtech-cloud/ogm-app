@@ -14,7 +14,7 @@ bridge/bin/
 bridge/obj/
 module/bin/
 module/obj/
-wfp/bin/
+wpf/bin/
 wpf/obj/
 *.user
 """
