@@ -75,7 +75,7 @@ template_proj_app = r"""
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="oelMVCS" Version="1.1.0" />
+    <PackageReference Include="oelMVCS" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -95,7 +95,7 @@ template_proj_bridge = r"""
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="oelMVCS" Version="1.1.0" />
+    <PackageReference Include="oelMVCS" Version="1.2.0" />
   </ItemGroup>
 
 </Project>
@@ -114,7 +114,7 @@ template_proj_module = r"""
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="oelMVCS" Version="1.1.0" />
+    <PackageReference Include="oelMVCS" Version="1.2.0" />
   </ItemGroup>
 
 </Project>
@@ -135,7 +135,7 @@ template_proj_wpf = r"""
 
   <ItemGroup>
     <PackageReference Include="HandyControl" Version="3.1.0" />
-    <PackageReference Include="oelMVCS" Version="1.1.0" />
+    <PackageReference Include="oelMVCS" Version="1.2.0" />
   </ItemGroup>
 
 </Project>
@@ -511,14 +511,14 @@ namespace {{org}}.{{mod}}
         {
             if(_value.IsString())
                 writer.WriteStringValue(_value.AsString());
-            else if (_value.IsInt())
-                writer.WriteNumberValue(_value.AsInt());
-            else if (_value.IsLong())
-                writer.WriteNumberValue(_value.AsLong());
-            else if (_value.IsFloat())
-                writer.WriteNumberValue(_value.AsFloat());
-            else if (_value.IsDouble())
-                writer.WriteNumberValue(_value.AsDouble());
+            else if (_value.IsInt32())
+                writer.WriteNumberValue(_value.AsInt32());
+            else if (_value.IsInt64())
+                writer.WriteNumberValue(_value.AsInt64());
+            else if (_value.IsFloat32())
+                writer.WriteNumberValue(_value.AsFloat32());
+            else if (_value.IsFloat64())
+                writer.WriteNumberValue(_value.AsFloat64());
             else if (_value.IsBool())
                 writer.WriteBooleanValue(_value.AsBool());
             else if(_value.IsStringAry())
@@ -575,6 +575,60 @@ namespace {{org}}.{{mod}}
                 }
                 writer.WriteEndArray();
             }
+            else if (_value.IsStringMap())
+            {
+                writer.WriteStartObject();
+                foreach (var pair in _value.AsStringMap())
+                {
+                    writer.WriteString(pair.Key, pair.Value);
+                }
+                writer.WriteEndObject();
+            }
+            else if (_value.IsInt32Map())
+            {
+                writer.WriteStartObject();
+                foreach (var pair in _value.AsInt32Map())
+                {
+                    writer.WriteNumber(pair.Key, pair.Value);
+                }
+                writer.WriteEndObject();
+            }
+            else if (_value.IsInt64Map())
+            {
+                writer.WriteStartObject();
+                foreach (var pair in _value.AsInt64Map())
+                {
+                    writer.WriteNumber(pair.Key, pair.Value);
+                }
+                writer.WriteEndObject();
+            }
+            else if (_value.IsFloat32Map())
+            {
+                writer.WriteStartObject();
+                foreach (var pair in _value.AsFloat32Map())
+                {
+                    writer.WriteNumber(pair.Key, pair.Value);
+                }
+                writer.WriteEndObject();
+            }
+            else if (_value.IsFloat64Map())
+            {
+                writer.WriteStartObject();
+                foreach (var pair in _value.AsFloat64Map())
+                {
+                    writer.WriteNumber(pair.Key, pair.Value);
+                }
+                writer.WriteEndObject();
+            }
+            else if (_value.IsBoolMap())
+            {
+                writer.WriteStartObject();
+                foreach (var pair in _value.AsBoolMap())
+                {
+                    writer.WriteBoolean(pair.Key, pair.Value);
+                }
+                writer.WriteEndObject();
+            }
         }
     }//class
 
@@ -585,7 +639,23 @@ namespace {{org}}.{{mod}}
     {
         public override Proto.Field Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (reader.TokenType == JsonTokenType.StartArray)
+            if (reader.TokenType == JsonTokenType.String)
+            {
+                return Proto.Field.FromString(reader.GetString());
+            }
+            else if (reader.TokenType == JsonTokenType.Number)
+            {
+                return Proto.Field.FromDouble(reader.GetDouble());
+            }
+            else if (reader.TokenType == JsonTokenType.True)
+            {
+                return Proto.Field.FromBool(reader.GetBoolean());
+            }
+            else if (reader.TokenType == JsonTokenType.False)
+            {
+                return Proto.Field.FromBool(reader.GetBoolean());
+            }
+            else if (reader.TokenType == JsonTokenType.StartArray)
             {
                 List<string> ary = new List<string>();
                 while (reader.Read())
@@ -594,17 +664,100 @@ namespace {{org}}.{{mod}}
                     {
                         break;
                     }
-                    string s = reader.GetString();
-                    ary.Add(s);
+                    if (reader.TokenType == JsonTokenType.String)
+                    {
+                        ary.Add(Proto.Field.FromString(reader.GetString()).AsString());
+                    }
+                    else if (reader.TokenType == JsonTokenType.Number)
+                    {
+                        ary.Add(Proto.Field.FromDouble(reader.GetDouble()).AsString());
+                    }
+                    else if (reader.TokenType == JsonTokenType.True)
+                    {
+                        ary.Add(Proto.Field.FromBool(reader.GetBoolean()).AsString());
+                    }
+                    else if (reader.TokenType == JsonTokenType.False)
+                    {
+                        ary.Add(Proto.Field.FromBool(reader.GetBoolean()).AsString());
+                    }
                 }
                 return Proto.Field.FromStringAry(ary.ToArray());
             }
-            return Proto.Field.FromString(reader.GetString());
+            return new Proto.Field();
         }
 
         public override void Write(Utf8JsonWriter writer, Proto.Field _value, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            if (_value.IsString())
+                writer.WriteStringValue(_value.AsString());
+            else if (_value.IsInt())
+                writer.WriteNumberValue(_value.AsInt());
+            else if (_value.IsLong())
+                writer.WriteStringValue(_value.AsString());
+            else if (_value.IsFloat())
+                writer.WriteNumberValue(_value.AsFloat());
+            else if (_value.IsDouble())
+                writer.WriteNumberValue(_value.AsDouble());
+            else if (_value.IsBool())
+                writer.WriteBooleanValue(_value.AsBool());
+            else if (_value.IsStringAry())
+            {
+                writer.WriteStartArray();
+                foreach (string v in _value.AsStringAry())
+                {
+                    writer.WriteStringValue(v);
+                }
+                writer.WriteEndArray();
+            }
+            else if (_value.IsIntAry())
+            {
+                writer.WriteStartArray();
+                foreach (int v in _value.AsIntAry())
+                {
+                    writer.WriteNumberValue(v);
+                }
+                writer.WriteEndArray();
+            }
+            else if (_value.IsLongAry())
+            {
+                writer.WriteStartArray();
+                foreach (string v in _value.AsStringAry())
+                {
+                    writer.WriteStringValue(v);
+                }
+                writer.WriteEndArray();
+            }
+            else if (_value.IsFloatAry())
+            {
+                writer.WriteStartArray();
+                foreach (float v in _value.AsFloatAry())
+                {
+                    writer.WriteNumberValue(v);
+                }
+                writer.WriteEndArray();
+            }
+            else if (_value.IsDoubleAry())
+            {
+                writer.WriteStartArray();
+                foreach (double v in _value.AsDoubleAry())
+                {
+                    writer.WriteNumberValue(v);
+                }
+                writer.WriteEndArray();
+            }
+            else if (_value.IsBoolAry())
+            {
+                writer.WriteStartArray();
+                foreach (bool v in _value.AsBoolAry())
+                {
+                    writer.WriteBooleanValue(v);
+                }
+                writer.WriteEndArray();
+            }
+            else
+            {
+                writer.WriteNullValue();
+            }
         }
     }//class
 }//namespace
@@ -625,10 +778,17 @@ namespace {{org}}.{{mod}}
             public const string NAME = "{{org}}.{{mod}}.{{service}}Status";
         }
 
+        private {{service}}Controller controller {get;set;}
+
         protected override void preSetup()
         {
+            controller = findController({{service}}Controller.NAME) as {{service}}Controller;
             Error err;
             status_ = spawnStatus<{{service}}Status>({{service}}Status.NAME, out err);
+            if(0 != err.getCode())
+            {
+                getLogger().Error(err.getMessage());
+            }
         }
 
         protected override void setup()
@@ -640,6 +800,10 @@ namespace {{org}}.{{mod}}
         {
             Error err;
             killStatus({{service}}Status.NAME, out err);
+            if(0 != err.getCode())
+            {
+                getLogger().Error(err.getMessage());
+            }
         }
 
         private {{service}}Status status
@@ -694,6 +858,11 @@ namespace {{org}}.{{mod}}
             data["{{org}}.{{mod}}.{{service}}"] = rootPanel;
             model.Broadcast("/module/view/attach", data);
         }
+
+        public void Alert(string _message)
+        {
+            bridge.Alert(_message);
+        }
 {{handlers}}
     }
 }
@@ -708,6 +877,13 @@ namespace {{org}}.{{mod}}
     public class {{service}}Controller: Controller
     {
         public const string NAME = "{{org}}.{{mod}}.{{service}}Controller";
+
+        private {{service}}View view {get;set;}
+
+        protected override void preSetup()
+        {
+            view = findView({{service}}View.NAME) as {{service}}View;
+        }
 
         protected override void setup()
         {
@@ -833,57 +1009,65 @@ public class Field
         {
         }
 
+        public static Field New(Tag _tag)
+        {
+            Field field = new Field();
+            field.tag_ = _tag;
+            return field;
+        }
+
+
         public static Field FromString(string _value)
         {
-            Field any = new Field();
-            any.tag_ = Tag.StringValue;
-            any.value_ = _value;
-            return any;
+            Field field = new Field();
+            field.tag_ = Tag.StringValue;
+            field.value_ = _value;
+            return field;
         }
 
         public static Field FromFloat(float _value)
         {
-            Field any = new Field();
-            any.tag_ = Tag.FloatValue;
-            any.value_ = _value.ToString();
-            return any;
+            Field field = new Field();
+            field.tag_ = Tag.FloatValue;
+            field.value_ = _value.ToString();
+            return field;
         }
 
         public static Field FromDouble(double _value)
         {
-            Field any = new Field();
-            any.tag_ = Tag.DoubleValue;
-            any.value_ = _value.ToString();
-            return any;
+            Field field = new Field();
+            field.tag_ = Tag.DoubleValue;
+            field.value_ = _value.ToString();
+            return field;
         }
 
         public static Field FromBool(bool _value)
         {
-            Field any = new Field();
-            any.tag_ = Tag.BoolValue;
-            any.value_ = _value.ToString();
-            return any;
+            Field field = new Field();
+            field.tag_ = Tag.BoolValue;
+            field.value_ = _value.ToString();
+            return field;
         }
 
         public static Field FromInt(int _value)
         {
-            Field any = new Field();
-            any.tag_ = Tag.IntValue;
-            any.value_ = _value.ToString();
-            return any;
+            Field field = new Field();
+            field.tag_ = Tag.IntValue;
+            field.value_ = _value.ToString();
+            return field;
         }
 
         public static Field FromLong(long _value)
         {
-            Field any = new Field();
-            any.tag_ = Tag.LongValue;
-            any.value_ = _value.ToString();
-            return any;
+            Field field = new Field();
+            field.tag_ = Tag.LongValue;
+            field.value_ = _value.ToString();
+            return field;
         }
         public static Field FromStringAry(string[] _value)
         {
-            Field any = new Field();
-            any.tag_ = Tag.StringAryValue;
+            Field field= new Field();
+            field.tag_ = Tag.StringAryValue;
             string ary = "";
             foreach(string v in _value)
             {
@@ -893,14 +1077,14 @@ public class Field
             {
                 ary = ary.Remove(ary.Length - 1, 1);
             }
-            any.value_ = string.Format("[{0}]", ary);
-            return any;
+            field.value_ = string.Format("[{0}]", ary);
+            return field;
         }
 
         public static Field FromFloatAry(float[] _value)
         {
-            Field any = new Field();
-            any.tag_ = Tag.FloatAryValue;
+            Field field = new Field();
+            field.tag_ = Tag.FloatAryValue;
             string ary = "";
             foreach (float v in _value)
             {
@@ -910,14 +1094,14 @@ public class Field
             {
                 ary = ary.Remove(ary.Length - 1, 1);
             }
-            any.value_ = string.Format("[{0}]", ary);
-            return any;
+            field.value_ = string.Format("[{0}]", ary);
+            return field;
         }
 
         public static Field FromDoubleAry(double[] _value)
         {
-            Field any = new Field();
-            any.tag_ = Tag.DoubleAryValue;
+            Field field = new Field();
+            field.tag_ = Tag.DoubleAryValue;
             string ary = "";
             foreach (double v in _value)
             {
@@ -927,14 +1111,14 @@ public class Field
             {
                 ary = ary.Remove(ary.Length - 1, 1);
             }
-            any.value_ = string.Format("[{0}]", ary);
-            return any;
+            field.value_ = string.Format("[{0}]", ary);
+            return field;
         }
 
         public static Field FromBoolAry(bool[] _value)
         {
-            Field any = new Field();
-            any.tag_ = Tag.BoolAryValue;
+            Field field = new Field();
+            field.tag_ = Tag.BoolAryValue;
             string ary = "";
             foreach (bool v in _value)
             {
@@ -944,14 +1128,14 @@ public class Field
             {
                 ary = ary.Remove(ary.Length - 1, 1);
             }
-            any.value_ = string.Format("[{0}]", ary);
-            return any;
+            field.value_ = string.Format("[{0}]", ary);
+            return field;
         }
 
         public static Field FromIntAry(int[] _value)
         {
-            Field any = new Field();
-            any.tag_ = Tag.IntAryValue;
+            Field field = new Field();
+            field.tag_ = Tag.IntAryValue;
             string ary = "";
             foreach (int v in _value)
             {
@@ -961,14 +1145,14 @@ public class Field
             {
                 ary = ary.Remove(ary.Length - 1, 1);
             }
-            any.value_ = string.Format("[{0}]", ary);
-            return any;
+            field.value_ = string.Format("[{0}]", ary);
+            return field;
         }
 
         public static Field FromLongAry(long[] _value)
         {
-            Field any = new Field();
-            any.tag_ = Tag.LongAryValue;
+            Field field = new Field();
+            field.tag_ = Tag.LongAryValue;
             string ary = "";
             foreach (long v in _value)
             {
@@ -978,8 +1162,8 @@ public class Field
             {
                 ary = ary.Remove(ary.Length - 1, 1);
             }
-            any.value_ = string.Format("[{0}]", ary);
-            return any;
+            field.value_ = string.Format("[{0}]", ary);
+            return field;
         }
 
         public bool IsNull()
@@ -1799,8 +1983,8 @@ for service in services.keys():
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new FieldConverter());
                 var rsp = JsonSerializer.Deserialize<Proto.{{rsp}}>(_reply, options);
-                {{service}}Model.{{service}}Status status = Model.Status.New<{{service}}Model.{{service}}Status>(rsp._status._code.AsInt(), rsp._status._message.AsString());
-                model.Broadcast("/{{org}}/{{mod}}/{{service}}/{{rpc}}", rsp);
+                Model.Status reply = Model.Status.New<Model.Status>(rsp._status._code.AsInt(), rsp._status._message.AsString());
+                model.Broadcast("/{{org}}/{{mod}}/{{service}}/{{rpc}}", reply);
             }, (_err) =>
             {
                 getLogger().Error(_err.getMessage());
