@@ -75,7 +75,7 @@ template_proj_app = r"""
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="oelMVCS" Version="1.2.0" />
+    <PackageReference Include="oelMVCS" Version="1.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -95,7 +95,7 @@ template_proj_bridge = r"""
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="oelMVCS" Version="1.2.0" />
+    <PackageReference Include="oelMVCS" Version="1.3.0" />
   </ItemGroup>
 
 </Project>
@@ -114,7 +114,7 @@ template_proj_module = r"""
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="oelMVCS" Version="1.2.0" />
+    <PackageReference Include="oelMVCS" Version="1.3.0" />
   </ItemGroup>
 
 </Project>
@@ -135,7 +135,7 @@ template_proj_wpf = r"""
 
   <ItemGroup>
     <PackageReference Include="HandyControl" Version="3.1.0" />
-    <PackageReference Include="oelMVCS" Version="1.2.0" />
+    <PackageReference Include="oelMVCS" Version="1.3.0" />
   </ItemGroup>
 
 </Project>
@@ -433,6 +433,7 @@ namespace app
 """
 
 templete_bridge_view_cs = r"""
+using System.Collections.Generic;
 using XTC.oelMVCS;
 namespace {{org}}.{{mod}}
 {
@@ -500,11 +501,55 @@ namespace {{org}}.{{mod}}
     /// <summary>
     /// 用于将请求数据序列化为json
     /// </summary>
-    class AnyConverter : JsonConverter<Any>
+    class AnyProtoConverter : JsonConverter<Any>
     {
         public override Any Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            if (reader.TokenType == JsonTokenType.String)
+            {
+                return Any.FromString(reader.GetString());
+            }
+            else if (reader.TokenType == JsonTokenType.Number)
+            {
+                return Any.FromFloat64(reader.GetDouble());
+            }
+            else if (reader.TokenType == JsonTokenType.True)
+            {
+                return Any.FromBool(reader.GetBoolean());
+            }
+            else if (reader.TokenType == JsonTokenType.False)
+            {
+                return Any.FromBool(reader.GetBoolean());
+            }
+            else if (reader.TokenType == JsonTokenType.StartArray)
+            {
+                List<string> ary = new List<string>();
+                while (reader.Read())
+                {
+                    if (reader.TokenType == JsonTokenType.EndArray)
+                    {
+                        break;
+                    }
+                    if (reader.TokenType == JsonTokenType.String)
+                    {
+                        ary.Add(Any.FromString(reader.GetString()).AsString());
+                    }
+                    else if (reader.TokenType == JsonTokenType.Number)
+                    {
+                        ary.Add(Any.FromFloat64(reader.GetDouble()).AsString());
+                    }
+                    else if (reader.TokenType == JsonTokenType.True)
+                    {
+                        ary.Add(Any.FromBool(reader.GetBoolean()).AsString());
+                    }
+                    else if (reader.TokenType == JsonTokenType.False)
+                    {
+                        ary.Add(Any.FromBool(reader.GetBoolean()).AsString());
+                    }
+                }
+                return Any.FromStringAry(ary.ToArray());
+            }
+            return new Any();
         }
 
         public override void Write(Utf8JsonWriter writer, Any _value, JsonSerializerOptions options)
@@ -521,6 +566,8 @@ namespace {{org}}.{{mod}}
                 writer.WriteNumberValue(_value.AsFloat64());
             else if (_value.IsBool())
                 writer.WriteBooleanValue(_value.AsBool());
+            else if (_value.IsBytes())
+                writer.WriteStringValue(_value.AsString());
             else if(_value.IsStringAry())
             {
                 writer.WriteStartArray();
@@ -632,134 +679,6 @@ namespace {{org}}.{{mod}}
         }
     }//class
 
-    /// <summary>
-    /// 用于将json反序列化为回复数据
-    /// </summary>
-    class FieldConverter : JsonConverter<Proto.Field>
-    {
-        public override Proto.Field Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.String)
-            {
-                return Proto.Field.FromString(reader.GetString());
-            }
-            else if (reader.TokenType == JsonTokenType.Number)
-            {
-                return Proto.Field.FromDouble(reader.GetDouble());
-            }
-            else if (reader.TokenType == JsonTokenType.True)
-            {
-                return Proto.Field.FromBool(reader.GetBoolean());
-            }
-            else if (reader.TokenType == JsonTokenType.False)
-            {
-                return Proto.Field.FromBool(reader.GetBoolean());
-            }
-            else if (reader.TokenType == JsonTokenType.StartArray)
-            {
-                List<string> ary = new List<string>();
-                while (reader.Read())
-                {
-                   if(reader.TokenType == JsonTokenType.EndArray)
-                    {
-                        break;
-                    }
-                    if (reader.TokenType == JsonTokenType.String)
-                    {
-                        ary.Add(Proto.Field.FromString(reader.GetString()).AsString());
-                    }
-                    else if (reader.TokenType == JsonTokenType.Number)
-                    {
-                        ary.Add(Proto.Field.FromDouble(reader.GetDouble()).AsString());
-                    }
-                    else if (reader.TokenType == JsonTokenType.True)
-                    {
-                        ary.Add(Proto.Field.FromBool(reader.GetBoolean()).AsString());
-                    }
-                    else if (reader.TokenType == JsonTokenType.False)
-                    {
-                        ary.Add(Proto.Field.FromBool(reader.GetBoolean()).AsString());
-                    }
-                }
-                return Proto.Field.FromStringAry(ary.ToArray());
-            }
-            return new Proto.Field();
-        }
-
-        public override void Write(Utf8JsonWriter writer, Proto.Field _value, JsonSerializerOptions options)
-        {
-            if (_value.IsString())
-                writer.WriteStringValue(_value.AsString());
-            else if (_value.IsInt())
-                writer.WriteNumberValue(_value.AsInt());
-            else if (_value.IsLong())
-                writer.WriteStringValue(_value.AsString());
-            else if (_value.IsFloat())
-                writer.WriteNumberValue(_value.AsFloat());
-            else if (_value.IsDouble())
-                writer.WriteNumberValue(_value.AsDouble());
-            else if (_value.IsBool())
-                writer.WriteBooleanValue(_value.AsBool());
-            else if (_value.IsStringAry())
-            {
-                writer.WriteStartArray();
-                foreach (string v in _value.AsStringAry())
-                {
-                    writer.WriteStringValue(v);
-                }
-                writer.WriteEndArray();
-            }
-            else if (_value.IsIntAry())
-            {
-                writer.WriteStartArray();
-                foreach (int v in _value.AsIntAry())
-                {
-                    writer.WriteNumberValue(v);
-                }
-                writer.WriteEndArray();
-            }
-            else if (_value.IsLongAry())
-            {
-                writer.WriteStartArray();
-                foreach (string v in _value.AsStringAry())
-                {
-                    writer.WriteStringValue(v);
-                }
-                writer.WriteEndArray();
-            }
-            else if (_value.IsFloatAry())
-            {
-                writer.WriteStartArray();
-                foreach (float v in _value.AsFloatAry())
-                {
-                    writer.WriteNumberValue(v);
-                }
-                writer.WriteEndArray();
-            }
-            else if (_value.IsDoubleAry())
-            {
-                writer.WriteStartArray();
-                foreach (double v in _value.AsDoubleAry())
-                {
-                    writer.WriteNumberValue(v);
-                }
-                writer.WriteEndArray();
-            }
-            else if (_value.IsBoolAry())
-            {
-                writer.WriteStartArray();
-                foreach (bool v in _value.AsBoolAry())
-                {
-                    writer.WriteBooleanValue(v);
-                }
-                writer.WriteEndArray();
-            }
-            else
-            {
-                writer.WriteNullValue();
-            }
-        }
-    }//class
 }//namespace
 """
 
@@ -793,7 +712,7 @@ namespace {{org}}.{{mod}}
 
         protected override void setup()
         {
-            getLogger().Trace("setup {{service}}Model");
+            getLogger().Trace("setup {{org}}.{{mod}}.{{service}}Model");
         }
 
         protected override void preDismantle()
@@ -845,7 +764,7 @@ namespace {{org}}.{{mod}}
 
         protected override void setup()
         {
-            getLogger().Trace("setup {{service}}View");
+            getLogger().Trace("setup {{org}}.{{mod}}.{{service}}View");
 {{routers}}
         }
 
@@ -887,14 +806,16 @@ namespace {{org}}.{{mod}}
 
         protected override void setup()
         {
-            getLogger().Trace("setup {{service}}Controller");
+            getLogger().Trace("setup {{org}}.{{mod}}.{{service}}Controller");
         }
     }
 }
 """
 
 template_module_ViewBridge_cs = r"""
+using System.Collections.Generic;
 using XTC.oelMVCS;
+
 namespace {{org}}.{{mod}}
 {
     public class {{service}}ViewBridge : I{{service}}ViewBridge
@@ -929,44 +850,51 @@ namespace {{org}}.{{mod}}
 
         protected override void setup()
         {
-            getLogger().Trace("setup {{service}}Service");
+            getLogger().Trace("setup {{org}}.{{mod}}.{{service}}Service");
         }
 {{rpc}}
 
         protected override void asyncRequest(string _url, string _method, Dictionary<string, Any> _params, OnReplyCallback _onReply, OnErrorCallback _onError, Options _options)
         {
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(_url); 
-            req.Method = _method;
-            req.ContentType =
-            "application/json;charset=utf-8";
-            var options = new JsonSerializerOptions();
-            options.Converters.Add(new AnyConverter());
-            string json = System.Text.Json.JsonSerializer.Serialize(_params, options);
-            byte[] data = System.Text.Encoding.UTF8.GetBytes(json);
-            req.ContentLength = data.Length;
-            using (Stream reqStream = req.GetRequestStream())
-            {
-                reqStream.Write(data, 0, data.Length);
-            }
-            HttpWebResponse rsp = (HttpWebResponse)req.GetResponse();
-            if(rsp == null)
-            {
-                _onError(Error.NewNullErr("HttpWebResponse is null"));
-                return;
-            }
-            if(rsp.StatusCode != HttpStatusCode.OK)
-            {
-                rsp.Close();
-                _onError(new Error(rsp.StatusCode.GetHashCode(), "HttpStatusCode != 200"));
-                return;
-            }
             string reply = "";
-            StreamReader sr;
-            using (sr = new StreamReader(rsp.GetResponseStream()))
+            try
             {
-                reply = sr.ReadToEnd();
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(_url);
+                req.Method = _method;
+                req.ContentType =
+                "application/json;charset=utf-8";
+                var options = new JsonSerializerOptions();
+                options.Converters.Add(new AnyProtoConverter());
+                byte[] data = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(_params, options);
+                req.ContentLength = data.Length;
+                using (Stream reqStream = req.GetRequestStream())
+                {
+                    reqStream.Write(data, 0, data.Length);
+                }
+                HttpWebResponse rsp = (HttpWebResponse)req.GetResponse();
+                if (rsp == null)
+                {
+                    _onError(Error.NewNullErr("HttpWebResponse is null"));
+                    return;
+                }
+                if (rsp.StatusCode != HttpStatusCode.OK)
+                {
+                    rsp.Close();
+                    _onError(new Error(rsp.StatusCode.GetHashCode(), "HttpStatusCode != 200"));
+                    return;
+                }
+                StreamReader sr;
+                using (sr = new StreamReader(rsp.GetResponseStream()))
+                {
+                    reply = sr.ReadToEnd();
+                }
+                sr.Close();
             }
-            sr.Close();
+            catch (System.Exception ex)
+            {
+                _onError(Error.NewException(ex));
+                return;
+            }
             _onReply(reply);
         }
     }
@@ -983,436 +911,6 @@ using XTC.oelMVCS;
 
 namespace {{org}}.{{mod}}.Proto
 {
-public class Field
-    {
-        public enum Tag
-        {
-            NULL = 0,
-            StringValue = 1,
-            IntValue = 2,
-            LongValue = 3,
-            FloatValue = 4,
-            DoubleValue = 5,
-            BoolValue = 6,
-            StringAryValue = 11,
-            IntAryValue = 12,
-            LongAryValue = 13,
-            FloatAryValue = 14,
-            DoubleAryValue = 15,
-            BoolAryValue = 16
-        }
-
-        private string value_ = "";
-        private Tag tag_ = Tag.NULL;
-
-        public Field()
-        {
-        }
-
-        public static Field New(Tag _tag)
-        {
-            Field field = new Field();
-            field.tag_ = _tag;
-            return field;
-        }
-
-
-        public static Field FromString(string _value)
-        {
-            Field field = new Field();
-            field.tag_ = Tag.StringValue;
-            field.value_ = _value;
-            return field;
-        }
-
-        public static Field FromFloat(float _value)
-        {
-            Field field = new Field();
-            field.tag_ = Tag.FloatValue;
-            field.value_ = _value.ToString();
-            return field;
-        }
-
-        public static Field FromDouble(double _value)
-        {
-            Field field = new Field();
-            field.tag_ = Tag.DoubleValue;
-            field.value_ = _value.ToString();
-            return field;
-        }
-
-        public static Field FromBool(bool _value)
-        {
-            Field field = new Field();
-            field.tag_ = Tag.BoolValue;
-            field.value_ = _value.ToString();
-            return field;
-        }
-
-        public static Field FromInt(int _value)
-        {
-            Field field = new Field();
-            field.tag_ = Tag.IntValue;
-            field.value_ = _value.ToString();
-            return field;
-        }
-
-        public static Field FromLong(long _value)
-        {
-            Field field = new Field();
-            field.tag_ = Tag.LongValue;
-            field.value_ = _value.ToString();
-            return field;
-        }
-        public static Field FromStringAry(string[] _value)
-        {
-            Field field= new Field();
-            field.tag_ = Tag.StringAryValue;
-            string ary = "";
-            foreach(string v in _value)
-            {
-                ary += string.Format("{0},", v);
-            }
-            if(!string.IsNullOrEmpty(ary))
-            {
-                ary = ary.Remove(ary.Length - 1, 1);
-            }
-            field.value_ = string.Format("[{0}]", ary);
-            return field;
-        }
-
-        public static Field FromFloatAry(float[] _value)
-        {
-            Field field = new Field();
-            field.tag_ = Tag.FloatAryValue;
-            string ary = "";
-            foreach (float v in _value)
-            {
-                ary += string.Format("{0},", v);
-            }
-            if (!string.IsNullOrEmpty(ary))
-            {
-                ary = ary.Remove(ary.Length - 1, 1);
-            }
-            field.value_ = string.Format("[{0}]", ary);
-            return field;
-        }
-
-        public static Field FromDoubleAry(double[] _value)
-        {
-            Field field = new Field();
-            field.tag_ = Tag.DoubleAryValue;
-            string ary = "";
-            foreach (double v in _value)
-            {
-                ary += string.Format("{0},", v);
-            }
-            if (!string.IsNullOrEmpty(ary))
-            {
-                ary = ary.Remove(ary.Length - 1, 1);
-            }
-            field.value_ = string.Format("[{0}]", ary);
-            return field;
-        }
-
-        public static Field FromBoolAry(bool[] _value)
-        {
-            Field field = new Field();
-            field.tag_ = Tag.BoolAryValue;
-            string ary = "";
-            foreach (bool v in _value)
-            {
-                ary += string.Format("{0},", v);
-            }
-            if (!string.IsNullOrEmpty(ary))
-            {
-                ary = ary.Remove(ary.Length - 1, 1);
-            }
-            field.value_ = string.Format("[{0}]", ary);
-            return field;
-        }
-
-        public static Field FromIntAry(int[] _value)
-        {
-            Field field = new Field();
-            field.tag_ = Tag.IntAryValue;
-            string ary = "";
-            foreach (int v in _value)
-            {
-                ary += string.Format("{0},", v);
-            }
-            if (!string.IsNullOrEmpty(ary))
-            {
-                ary = ary.Remove(ary.Length - 1, 1);
-            }
-            field.value_ = string.Format("[{0}]", ary);
-            return field;
-        }
-
-        public static Field FromLongAry(long[] _value)
-        {
-            Field field = new Field();
-            field.tag_ = Tag.LongAryValue;
-            string ary = "";
-            foreach (long v in _value)
-            {
-                ary += string.Format("{0},", v);
-            }
-            if (!string.IsNullOrEmpty(ary))
-            {
-                ary = ary.Remove(ary.Length - 1, 1);
-            }
-            field.value_ = string.Format("[{0}]", ary);
-            return field;
-        }
-
-        public bool IsNull()
-        {
-            return tag_ == Tag.NULL;
-        }
-
-        public bool IsString()
-        {
-            return tag_ == Tag.StringValue;
-        }
-
-        public bool IsInt()
-        {
-            return tag_ == Tag.IntValue;
-        }
-
-        public bool IsLong()
-        {
-            return tag_ == Tag.LongValue;
-        }
-
-        public bool IsFloat()
-        {
-            return tag_ == Tag.FloatValue;
-        }
-
-        public bool IsDouble()
-        {
-            return tag_ == Tag.DoubleValue;
-        }
-
-        public bool IsBool()
-        {
-            return tag_ == Tag.BoolValue;
-        }
-
-        public bool IsStringAry()
-        {
-            return tag_ == Tag.StringAryValue;
-        }
-
-        public bool IsIntAry()
-        {
-            return tag_ == Tag.IntAryValue;
-        }
-
-        public bool IsLongAry()
-        {
-            return tag_ == Tag.LongAryValue;
-        }
-
-        public bool IsFloatAry()
-        {
-            return tag_ == Tag.FloatAryValue;
-        }
-
-        public bool IsDoubleAry()
-        {
-            return tag_ == Tag.DoubleAryValue;
-        }
-
-        public bool IsBoolAry()
-        {
-            return tag_ == Tag.BoolAryValue;
-        }
-
-
-
-        public string AsString()
-        {
-            return value_;
-        }
-
-        public int AsInt()
-        {
-            int value = 0;
-            int.TryParse(value_, out value);
-            return value;
-        }
-
-        public long AsLong()
-        {
-            long value = 0;
-            long.TryParse(value_, out value);
-            return value;
-        }
-
-        public float AsFloat()
-        {
-            float value = 0;
-            float.TryParse(value_, out value);
-            return value;
-        }
-
-        public double AsDouble()
-        {
-            double value = 0;
-            double.TryParse(value_, out value);
-            return value;
-        }
-
-        public bool AsBool()
-        {
-            bool value = false;
-            bool.TryParse(value_, out value);
-            return value;
-        }
-
-        public string[] AsStringAry()
-        {
-            List<string> v = new List<string>();
-            if (value_.StartsWith("[") && value_.EndsWith("]"))
-            {
-                string ary = value_.Remove(0, 1);
-                ary = ary.Remove(ary.Length - 1, 1);
-                foreach (string e in ary.Split(","))
-                {
-                    string value = e.Trim();
-                    v.Add(value);
-                }
-            }
-            return v.ToArray();
-        }
-
-        public int[] AsIntAry()
-        {
-            List<int> v = new List<int>();
-            if (value_.StartsWith("[") && value_.EndsWith("]"))
-            {
-                string ary = value_.Remove(0, 1);
-                ary = ary.Remove(ary.Length - 1, 1);
-                foreach (string e in ary.Split(","))
-                {
-                    int value;
-                    if(int.TryParse(e.Trim(), out value))
-                        v.Add(value);
-                    else
-                        v.Add(0);
-                }
-            }
-            return v.ToArray();
-        }
-
-        public long[] AsLongAry()
-        {
-            List<long> v = new List<long>();
-            if (value_.StartsWith("[") && value_.EndsWith("]"))
-            {
-                string ary = value_.Remove(0, 1);
-                ary = ary.Remove(ary.Length - 1, 1);
-                foreach (string e in ary.Split(","))
-                {
-                    long value;
-                    if (long.TryParse(e.Trim(), out value))
-                        v.Add(value);
-                    else
-                        v.Add(0);
-                }
-            }
-            return v.ToArray();
-        }
-
-        public float[] AsFloatAry()
-        {
-            List<float> v = new List<float>();
-            if (value_.StartsWith("[") && value_.EndsWith("]"))
-            {
-                string ary = value_.Remove(0, 1);
-                ary = ary.Remove(ary.Length - 1, 1);
-                foreach (string e in ary.Split(","))
-                {
-                    float value;
-                    if (float.TryParse(e.Trim(), out value))
-                        v.Add(value);
-                    else
-                        v.Add(0);
-                }
-            }
-            return v.ToArray();
-        }
-
-        public double[] AsDoubleAry()
-        {
-            List<double> v = new List<double>();
-            if (value_.StartsWith("[") && value_.EndsWith("]"))
-            {
-                string ary = value_.Remove(0, 1);
-                ary = ary.Remove(ary.Length - 1, 1);
-                foreach (string e in ary.Split(","))
-                {
-                    double value;
-                    if (double.TryParse(e.Trim(), out value))
-                        v.Add(value);
-                    else
-                        v.Add(0);
-                }
-            }
-            return v.ToArray();
-        }
-
-        public bool[] AsBoolAry()
-        {
-            List<bool> v = new List<bool>();
-            if (value_.StartsWith("[") && value_.EndsWith("]"))
-            {
-                string ary = value_.Remove(0, 1);
-                ary = ary.Remove(ary.Length - 1, 1);
-                foreach (string e in ary.Split(","))
-                {
-                    bool value;
-                    if (bool.TryParse(e.Trim(), out value))
-                        v.Add(value);
-                    else
-                        v.Add(false);
-                }
-            }
-            return v.ToArray();
-        }
-
-        public Any AsAny()
-        {
-            if(IsString())
-                return Any.FromString(AsString());
-            if(IsInt())
-                return Any.FromInt32(AsInt());
-            if(IsLong())
-                return Any.FromInt64(AsLong());
-            if(IsFloat())
-                return Any.FromFloat32(AsFloat());
-            if(IsDouble())
-                return Any.FromFloat64(AsDouble());
-            if(IsBool())
-                return Any.FromBool(AsBool());
-            if (IsStringAry())
-                return Any.FromStringAry(AsStringAry());
-            if (IsIntAry())
-                return Any.FromInt32Ary(AsIntAry());
-            if (IsLongAry())
-                return Any.FromInt64Ary(AsLongAry());
-            if (IsFloatAry())
-                return Any.FromFloat32Ary(AsFloatAry());
-            if (IsDoubleAry())
-                return Any.FromFloat64Ary(AsDoubleAry());
-            if (IsBoolAry())
-                return Any.FromBoolAry(AsBoolAry());
-            return new Any();
-        }
-    }//class
 {{proto}}
 }
 """
@@ -1581,6 +1079,29 @@ type_dict = {
         "enum": "int",
         }
 
+type_to_any = {
+        "string": "string",
+        "int": "int32",
+        "long": "int64",
+        "bool": "bool",
+        "float": "float32",
+        "double": "float64",
+        "byte[]": "bytes",
+        }
+
+type_default_value = {
+        "string": "\"\"",
+        "int32": "0",
+        "uint32": "0",
+        "int64": "0",
+        "uint64": "0",
+        "bool": "false",
+        "float32": "0",
+        "float64": "0",
+        "bytes": "new byte[0]",
+        "enum": "0",
+        }
+
 # 解析协议文件
 for entry in os.listdir(proto_dir):
     # 跳过不是.proto的文件
@@ -1666,7 +1187,9 @@ for entry in os.listdir(proto_dir):
                 if isRepeated:
                     field_type = field_type + "[]"
                 if field_type.startswith('map'):
-                    field_type = 'System.Collections.Generic.Dictionary' + field_type[3:]
+                    #field_type = 'System.Collections.Generic.Dictionary' + field_type[3:]
+                    match = re.findall(r",\s+(\w*?)\>", field_type, re.S)
+                    field_type = match[0]+ "<>"
                 # 提取字段名
                 match = re.findall(r"\s+(\w+)\s+=", line, re.S)
                 field_name = ""
@@ -1779,6 +1302,8 @@ for service in services.keys():
                 if field_type in enums:
                     field_type = "enum"
                 # 转换类型
+                if field_type.endswith('<>'):
+                    field_type =  str.format('Dictionary<string,{}>', field_type[:-2])
                 if field_type in type_dict.keys():
                     field_type = type_dict[field_type]
                 args_block = args_block + str.format("{} _{}, ", field_type, field_name)
@@ -1879,10 +1404,10 @@ for service in services.keys():
         private void handle{{service}}{{rpc}}(Model.Status _status, object _data)
         {
             var rsp = (Proto.{{rsp}})_data;
-            if(rsp._status._code.AsInt() == 0)
+            if(rsp._status._code.AsInt32() == 0)
                 bridge.Alert("Success");
             else
-                bridge.Alert(string.Format("Failure：\n\nCode: {0}\nMessage:\n{1}", rsp._status._code.AsInt(), rsp._status._message.AsString()));
+                bridge.Alert(string.Format("Failure：\n\nCode: {0}\nMessage:\n{1}", rsp._status._code.AsInt32(), rsp._status._message.AsString()));
         }
     """
     with open("./vs2019/module/{}View.cs".format(service), "w", encoding="utf-8") as wf:
@@ -1944,15 +1469,22 @@ for service in services.keys():
                 # 转换类型
                 if field_type in type_dict.keys():
                     field_type = type_dict[field_type]
-                args_block = args_block + str.format("{} _{}, ", field_type, field_name)
+                if field_type.endswith('<>'):
+                    args_block = args_block + str.format("Dictionary<string, {}> _{}, ", field_type[:-2], field_name)
+                else:
+                    args_block = args_block + str.format("{} _{}, ", field_type, field_name)
 
-                if field_type in type_dict.values():
+                if field_type.endswith('<>'):
                     assign_block = assign_block + str.format(
-                        "            req._{} = Proto.Field.From{}(_{});\n", field_name, field_type.capitalize(), field_name
+                            "            req._{} = Any.From{}Map(_{});\n", field_name, field_type[:-2].title(), field_name
                         )
                 elif field_type.endswith('[]'):
                     assign_block = assign_block + str.format(
-                            "            req._{} = Proto.Field.From{}Ary(_{});\n", field_name, field_type[:-2].capitalize(), field_name
+                            "            req._{} = Any.From{}Ary(_{});\n", field_name, field_type[:-2].title(), field_name
+                        )
+                elif field_type in type_dict.values():
+                    assign_block = assign_block + str.format(
+                        "            req._{} = Any.From{}(_{});\n", field_name, type_to_any[field_type].title(), field_name
                         )
             # 移除末尾的 ', '
             if len(args_block) > 0:
@@ -1981,9 +1513,9 @@ for service in services.keys():
             post(string.Format("{0}/{{org}}/{{mod}}/{{service}}/{{rpc}}", getConfig()["domain"].AsString()), paramMap, (_reply) =>
             {
                 var options = new JsonSerializerOptions();
-                options.Converters.Add(new FieldConverter());
+                options.Converters.Add(new AnyProtoConverter());
                 var rsp = JsonSerializer.Deserialize<Proto.{{rsp}}>(_reply, options);
-                Model.Status reply = Model.Status.New<Model.Status>(rsp._status._code.AsInt(), rsp._status._message.AsString());
+                Model.Status reply = Model.Status.New<Model.Status>(rsp._status._code.AsInt32(), rsp._status._message.AsString());
                 model.Broadcast("/{{org}}/{{mod}}/{{service}}/{{rpc}}", reply);
             }, (_err) =>
             {
@@ -2012,15 +1544,9 @@ for service in services.keys():
                 if field_type in type_dict.keys():
                     field_type = type_dict[field_type]
 
-                if field_type in type_dict.values():
+                if field_type in type_dict.values() or field_type.endswith('[]') or field_type.endswith('{}'):
                     assign_block = assign_block + str.format(
-                        '            paramMap["{}"] = _request._{}.AsAny();\n',
-                        field_name,
-                        field_name,
-                        )
-                elif field_type.endswith('[]'):
-                    assign_block = assign_block + str.format(
-                        '            paramMap["{}"] = _request._{}.AsAny();\n',
+                        '            paramMap["{}"] = _request._{};\n',
                         field_name,
                         field_name,
                         )
@@ -2047,40 +1573,74 @@ with open("./vs2019/module/Protocol.cs", "w", encoding="utf-8") as wf:
     """
     proto_block = ""
     for message_name in messages.keys():
+        # 成员声明
         field_block = ""
+        # 构造函数中赋初值
         assign_block = ""
+        # 遍历所有字段
         for field in messages[message_name]:
+            # 字段名
             field_name = field[0]
+            # 字段类型
             field_type = field[1]
             # 转换枚举类型
             if field_type in enums:
                 field_type = "enum"
-            # 转换类型
-            isArray = False
+
             if field_type.endswith('[]'):
                 field_type = field_type[:-2]
-                isArray = True
                 if field_type in type_dict.keys():
-                    field_type = 'Field'
-
-            else:
-                if field_type in type_dict.keys():
-                    field_type = 'Field'
-
-            if isArray and field_type != 'Field':
-                assign_block = assign_block + str.format(
+                    """可转换类型的数组, 使用Any转换"""
+                    assign_block = assign_block + str.format(
+                        "                _{} = Any.From{}Ary(new {}[0]);\n", field_name, field_type.title(), field_type
+                        )
+                    field_block = field_block + str.format(
+                        "            [JsonPropertyName(\"{}\")]\n            public Any _{} {{get;set;}}\n", field_name, field_name
+                        )
+                else:
+                    """不可转换类型的数组, 使用直接实例化的方式"""
+                    assign_block = assign_block + str.format(
                         "                _{} = new {}[0];\n", field_name, field_type
                         )
-                field_block = field_block + str.format(
+                    field_block = field_block + str.format(
                         "            [JsonPropertyName(\"{}\")]\n            public {}[] _{} {{get;set;}}\n", field_name, field_type, field_name
                         )
+            elif field_type.endswith('<>'):
+                field_type = field_type[:-2]
+                if field_type in type_dict.keys():
+                    """可转换类型的数组, 使用Any转换"""
+                    assign_block = assign_block + str.format(
+                        "                _{} = Any.From{}Map(new Dictionary<string,{}>());\n", field_name, field_type.title(), field_type
+                        )
+                    field_block = field_block + str.format(
+                        "            [JsonPropertyName(\"{}\")]\n            public Any _{} {{get;set;}}\n", field_name, field_name
+                        )
+                else:
+                    """不可转换类型的数组, 使用直接实例化的方式"""
+                    assign_block = assign_block + str.format(
+                        "                _{} = new Dictionary<string, {}>();\n", field_name, field_type
+                        )
+                    field_block = field_block + str.format(
+                        "            [JsonPropertyName(\"{}\")]\n            public Dictionary<string, {}> _{} {{get;set;}}\n", field_name, field_type, field_name
+                        )
             else:
-                assign_block = assign_block + str.format(
+                if field_type in type_dict.keys():
+                    """可转换类型的数组, 使用Any转换"""
+                    assign_block = assign_block + str.format(
+                        "                _{} = Any.From{}({});\n", field_name, field_type.title(), type_default_value[field_type]
+                        )
+                    field_block = field_block + str.format(
+                        "            [JsonPropertyName(\"{}\")]\n            public Any _{} {{get;set;}}\n", field_name, field_name
+                        )
+                else:
+                    """不可转换类型, 使用直接实例化的方式"""
+                    assign_block = assign_block + str.format(
                         "                _{} = new {}();\n", field_name, field_type
                         )
-                field_block = field_block + str.format(
+                    field_block = field_block + str.format(
                         "            [JsonPropertyName(\"{}\")]\n            public {} _{} {{get;set;}}\n", field_name, field_type, field_name
                         )
+
         message_block = template_class.replace("{{message}}", message_name)
         message_block = message_block.replace("{{field}}", field_block)
         message_block = message_block.replace("{{assign}}", assign_block)
