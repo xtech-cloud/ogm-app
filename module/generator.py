@@ -5,7 +5,7 @@ import yaml
 from typing import Dict, List, Tuple
 
 """
-ver 1.5.0
+ver 1.5.1
 """
 
 
@@ -79,7 +79,7 @@ template_proj_app = r"""
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="oelMVCS" Version="1.9.1" />
+    <PackageReference Include="oelMVCS" Version="1.9.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -99,7 +99,7 @@ template_proj_bridge = r"""
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="oelMVCS" Version="1.9.1" />
+    <PackageReference Include="oelMVCS" Version="1.9.3" />
   </ItemGroup>
 
 </Project>
@@ -118,7 +118,7 @@ template_proj_module = r"""
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="oelMVCS" Version="1.9.1" />
+    <PackageReference Include="oelMVCS" Version="1.9.3" />
   </ItemGroup>
 
 </Project>
@@ -139,7 +139,7 @@ template_proj_wpf = r"""
 
   <ItemGroup>
     <PackageReference Include="HandyControl" Version="3.2.0" />
-    <PackageReference Include="oelMVCS" Version="1.9.1" />
+    <PackageReference Include="oelMVCS" Version="1.9.3" />
   </ItemGroup>
 
 </Project>
