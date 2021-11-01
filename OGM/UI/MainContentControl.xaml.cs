@@ -33,17 +33,16 @@ namespace OGM
         }
         
 
-        public MainContentFacade facade { get; set; }
+        private MainContentFacade facade_ { get; set; }
 
         public MainContentControl()
         {
             InitializeComponent();
 
-            facade = App.Current.FindResource(MainContentFacade.NAME) as MainContentFacade;
+            facade_ = FacadeCache.facadeMainContent;
             MainContentUiBridge bridge = new MainContentUiBridge();
             bridge.control = this;
-            facade.setUiBridge(bridge);
+            facade_.setUiBridge(bridge);
         }
-
     }
 }

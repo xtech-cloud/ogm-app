@@ -1,15 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OGM
 {
@@ -18,6 +8,31 @@ namespace OGM
     /// </summary>
     public partial class Titlebar : UserControl
     {
+
+        public class TitlebarUiBridge : ITitlebarUiBridge
+        {
+            public Titlebar control { get; set; }
+
+            public void Alert(string _message)
+            {
+                HandyControl.Controls.Growl.Warning(_message, "StatusGrowl");
+            }
+
+            public void RefreshSigninSuccess(string _location)
+            {
+                if (_location.Equals("private"))
+                {
+                    control.spPrivateAuth.Visibility = Visibility.Collapsed;
+                    control.spPrivateProfile.Visibility = Visibility.Visible;
+                }
+                else if (_location.Equals("public"))
+                {
+                    control.spPublicAuth.Visibility = Visibility.Collapsed;
+                    control.spPublicProfile.Visibility = Visibility.Visible;
+                }
+            }
+        }
+
         public static readonly DependencyProperty MaximumVisibilityProperty = DependencyProperty.Register("MaximumVisibility", typeof(Visibility), typeof(Titlebar));
         public static readonly DependencyProperty WindowVisibilityProperty = DependencyProperty.Register("WindowVisibility", typeof(Visibility), typeof(Titlebar));
 
@@ -33,12 +48,24 @@ namespace OGM
             set { SetValue(WindowVisibilityProperty, value); }
         }
 
+        private TitlebarFacade facade_ { get; set; }
+
         public Titlebar()
         {
             InitializeComponent();
 
+            facade_ = FacadeCache.facadeTitlebar;
+            TitlebarUiBridge bridge = new TitlebarUiBridge();
+            bridge.control = this;
+            facade_.setUiBridge(bridge);
+
             MaximumVisibility = Visibility.Visible;
             WindowVisibility = Visibility.Hidden;
+
+            spPrivateAuth.Visibility = Visibility.Visible;
+            spPrivateProfile.Visibility = Visibility.Collapsed;
+            spPublicAuth.Visibility = Visibility.Visible;
+            spPublicProfile.Visibility = Visibility.Collapsed;
         }
 
         private void OnMinimumClick(object sender, RoutedEventArgs e)
@@ -63,6 +90,64 @@ namespace OGM
         private void OnCloseClick(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void onPublicSigninClick(object sender, RoutedEventArgs e)
+        {
+            ITitlebarViewBridge bridge = facade_.getViewBridge() as ITitlebarViewBridge;
+            bridge.SetStorageValue("PublicUsername", tbPublicUsername.Text);
+            bridge.OnPublicSigninSubmit(tbPublicUsername.Text, pbPublicPassword.Password);
+        }
+
+        private void onPrivateSigninClick(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(tbHost.Text) || string.IsNullOrEmpty(tbPrivateUsername.Text) || string.IsNullOrEmpty(pbPrivatePassword.Password))
+                return;
+
+            ITitlebarViewBridge bridge = facade_.getViewBridge() as ITitlebarViewBridge;
+            bridge.SetStorageValue("PrivateHost", tbHost.Text);
+            bridge.SetStorageValue("PrivateUsername", tbPrivateUsername.Text);
+            bridge.OnPrivateSigninSubmit(tbHost.Text, tbPrivateUsername.Text, pbPrivatePassword.Password);
+        }
+
+        private void onPublicAuthClicked(object sender, RoutedEventArgs e)
+        {
+            openTopDrawer("auth.public");
+            ITitlebarViewBridge bridge = facade_.getViewBridge() as ITitlebarViewBridge;
+            tbPublicUsername.Text = bridge.GetStorageValue("PublicUsername");
+        }
+
+        private void onPrivateAuthClicked(object sender, RoutedEventArgs e)
+        {
+            openTopDrawer("auth.private");
+
+            ITitlebarViewBridge bridge = facade_.getViewBridge() as ITitlebarViewBridge;
+            tbHost.Text = bridge.GetStorageValue("PrivateHost");
+            tbPrivateUsername.Text = bridge.GetStorageValue("PrivateUsername");
+        }
+
+        private void onPrivateSignoutClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void onPublicSignoutClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void onVersionClicked(object sender, RoutedEventArgs e)
+        {
+            openTopDrawer("version");
+            tbVersion.Text = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        }
+
+        private void openTopDrawer(string _name)
+        {
+            drawerTop.IsOpen = true;
+            spPublic.Visibility = _name.Equals("auth.public") ? Visibility.Visible : Visibility.Collapsed;
+            spPrivate.Visibility = _name.Equals("auth.private") ? Visibility.Visible : Visibility.Collapsed;
+            spVersion.Visibility = _name.Equals("version") ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }

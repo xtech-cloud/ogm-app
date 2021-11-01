@@ -27,8 +27,8 @@ namespace OGM
 
         protected override void postSetup()
         {
-            route("/module/view/attach", this.handleAttachView);
-            route(SideMenuAction.TAB_ACTIVATED, handleTabActivated);
+            addRouter("/module/view/attach", this.handleAttachView);
+            addRouter(SideMenuAction.TAB_ACTIVATED, handleTabActivated);
         }
 
 

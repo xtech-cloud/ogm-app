@@ -101,7 +101,7 @@ namespace OGM
 
         public void Cancel()
         {
-
+            //TODO Cancel
         }
 
         private Assembly assemblyResolve(object sender, ResolveEventArgs args)

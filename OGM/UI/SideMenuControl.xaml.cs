@@ -19,18 +19,18 @@ namespace OGM
 
         }
 
-        public SideMenuFacade facade { get; set; }
-
+        private SideMenuFacade facade_ { get; set; }
 
         public SideMenuControl()
         {
             InitializeComponent();
             loadMenu();
 
-            facade = App.Current.FindResource(SideMenuFacade.NAME) as SideMenuFacade;
+
+            facade_ = FacadeCache.facadeSideMenu;
             SideMenuUiBridge bridge = new SideMenuUiBridge();
             bridge.control = this;
-            facade.setUiBridge(bridge);
+            facade_.setUiBridge(bridge);
 
         }
 
@@ -52,9 +52,22 @@ namespace OGM
         private void SwitchItemCmd_Execute(FunctionEventArgs<object> _args)
         {
             SideMenuItem item = _args.Info as SideMenuItem;
-            string entry = (string)item.FindResource("Entry");
-            ISideMenuViewBridge bridge = facade.getViewBridge() as ISideMenuViewBridge;
-            bridge.OnTabActivated(entry);
+
+            string entry = "";
+            try
+            {
+                entry = (string)item.FindResource("Entry");
+            }
+            catch (System.Exception ex)
+            {
+                // nothin to 
+            }
+
+            if (!string.IsNullOrEmpty(entry))
+            {
+                ISideMenuViewBridge bridge = facade_.getViewBridge() as ISideMenuViewBridge;
+                bridge.OnTabActivated(entry);
+            }
             _args.Handled = true;
         }
         public bool SwitchItemCmd_CanExecute(FunctionEventArgs<object> _args)

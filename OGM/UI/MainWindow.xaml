@@ -13,27 +13,56 @@
         WindowStartupLocation="CenterScreen"
         d:DesignHeight="800" 
         d:DesignWidth="1400" 
-               BorderThickness="0" WindowStyle="None" Icon="/Resources/app.ico"
+        StateChanged="OnStateChanghed"
+        BorderThickness="0" WindowStyle="None" Icon="/Resources/app.ico"
+        Name="mainWindow"
         >
     <hc:SimplePanel Background="#FFF4F5FA">
         <!-- 主内容 -->
-        <hc:SimplePanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="200,72,0,72">
+        <hc:SimplePanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="216,80,0,72">
             <local:MainContentControl />
         </hc:SimplePanel>
         <!-- 顶部 -->
-        <hc:SimplePanel Height="72" Background="White" VerticalAlignment="Top" HorizontalAlignment="Stretch" Effect="{StaticResource EffectShadow2}" Margin="200,0,0,0" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+        <hc:SimplePanel Height="80" Background="White" VerticalAlignment="Top" HorizontalAlignment="Stretch" Effect="{StaticResource EffectShadow2}" Margin="216,0,0,0" MouseLeftButtonDown="Window_MouseLeftButtonDown">
             <local:Titlebar></local:Titlebar>
         </hc:SimplePanel>
 
         <!-- 底部 -->
-        <hc:SimplePanel Height="72" Background="White" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Effect="{StaticResource EffectShadow2}" Margin="200,0,0,0">
+        <hc:SimplePanel Height="72" Background="White" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Effect="{StaticResource EffectShadow2}" Margin="216,0,0,0">
+            <hc:Badge Name="badgeLogger" Maximum="999" BadgeMargin="0,-14,-15,0" Height="30" Width="60"  Margin="32,0,0,0" Style="{StaticResource BadgeDanger}" HorizontalAlignment="Left">
+                <Button HorizontalAlignment="Stretch" Content="日志" Style="{StaticResource ButtonDashedPrimary}" Click="onLoggerClicked"/>
+            </hc:Badge>
+            <hc:Badge Name="badgeTask" BadgeMargin="0,-14,-10,0" Height="30" Width="60" Margin="0,0,50,0" Style="{StaticResource BadgeDanger}" HorizontalAlignment="Right">
+                <Button Content="任务" Click="onTaskClicked" Style="{StaticResource ButtonDashedPrimary}" HorizontalAlignment="Stretch"/>
+            </hc:Badge>
+            <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Left" Margin="128, 0,128,0">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Horizontal" Margin="24,6,24,0" hc:Growl.Token="StatusGrowl" />
+            </ScrollViewer>
         </hc:SimplePanel>
 
         <!-- 左部 -->
-        <StackPanel Width="200" Background="White" HorizontalAlignment="Left" VerticalAlignment="Stretch" Effect="{StaticResource EffectShadow5}">
-            <Image Height="72" Source="../Resources/images/title-logo.png"></Image>
-            <local:SideMenuControl />
-        </StackPanel>
+        <hc:SimplePanel Width="216" Background="White" HorizontalAlignment="Left" VerticalAlignment="Stretch" Effect="{StaticResource EffectShadow5}">
+            <Image VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="80" Source="../Resources/images/title-logo.png"></Image>
+            <ScrollViewer Margin="0,80,0,0">
+                <local:SideMenuControl />
+            </ScrollViewer>
+        </hc:SimplePanel>
+
+        <hc:Drawer Name="drawerBottom" Dock="Bottom" ShowMask="True">
+            <Border Background="{StaticResource RegionBrush}" Height="300" BorderThickness="0,1,0,0" BorderBrush="{StaticResource BorderBrush}">
+                <RichTextBox Name="rtbLogger" Margin="16" VerticalScrollBarVisibility="Auto"></RichTextBox>
+            </Border>
+        </hc:Drawer>
+
+        <hc:Drawer Name="drawerTask" Dock="Right" ShowMask="True" MaskCanClose="True">
+            <Border Background="{StaticResource RegionBrush}" Width="300" BorderThickness="1,0,0,0" BorderBrush="{StaticResource BorderBrush}">
+                <StackPanel Orientation="Vertical" Margin="32">
+                    <hc:LoadingLine Margin="0,30" Foreground="BlueViolet" Style="{StaticResource LoadingLineLarge}"/>
+                    <ListBox Name="lbTask">
+                    </ListBox>
+                </StackPanel>
+            </Border>
+        </hc:Drawer>
     </hc:SimplePanel>
 
 </hc:GlowWindow>
