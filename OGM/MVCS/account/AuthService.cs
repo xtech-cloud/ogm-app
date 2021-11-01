@@ -31,7 +31,7 @@ namespace ogm.account
             paramMap["username"] = _request._username;
             paramMap["password"] = Any.FromString(wrapPassword(_request._password.AsString()));
 
-            post(string.Format("{0}/xtc/ogm/account/Auth/Signup", getConfig()["domain"].AsString()), paramMap, (_reply) =>
+            post(string.Format("{0}/xtc/ogm/account/Auth/Signup", getConfig().getField("domain").AsString()), paramMap, (_reply) =>
             {
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new AnyProtoConverter());

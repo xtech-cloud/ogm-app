@@ -28,7 +28,7 @@ namespace ogm.account
             paramMap["offset"] = _request._offset;
             paramMap["count"] = _request._count;
 
-            post(string.Format("{0}/ogm/account/Query/List", getConfig()["domain"].AsString()), paramMap, (_reply) =>
+            post(string.Format("{0}/ogm/account/Query/List", getConfig().getField("domain").AsString()), paramMap, (_reply) =>
             {
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new AnyProtoConverter());
@@ -48,7 +48,7 @@ namespace ogm.account
             paramMap["field"] = _request._field;
             paramMap["value"] = _request._value;
 
-            post(string.Format("{0}/ogm/account/Query/Single", getConfig()["domain"].AsString()), paramMap, (_reply) =>
+            post(string.Format("{0}/ogm/account/Query/Single", getConfig().getField("domain").AsString()), paramMap, (_reply) =>
             {
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new AnyProtoConverter());

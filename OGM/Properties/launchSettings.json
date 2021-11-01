@@ -2,7 +2,7 @@
   "profiles": {
     "OGM": {
       "commandName": "Project",
-      "workingDirectory": "D:\\SyncDriver\\_Runpath\\meex-studio"
+      "workingDirectory": "D:\\SyncDriver\\_Runpath\\ogm-app"
     }
   }
 }

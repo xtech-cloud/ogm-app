@@ -28,7 +28,7 @@ namespace ogm.account
             paramMap["strategy"] = _request._strategy;
             paramMap["accessToken"] = _request._accessToken;
 
-            post(string.Format("{0}/ogm/account/Profile/Query", getConfig()["domain"].AsString()), paramMap, (_reply) =>
+            post(string.Format("{0}/ogm/account/Profile/Query", getConfig().getField("domain").AsString()), paramMap, (_reply) =>
             {
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new AnyProtoConverter());
@@ -49,7 +49,7 @@ namespace ogm.account
             paramMap["accessToken"] = _request._accessToken;
             paramMap["profile"] = _request._profile;
 
-            post(string.Format("{0}/ogm/account/Profile/Update", getConfig()["domain"].AsString()), paramMap, (_reply) =>
+            post(string.Format("{0}/ogm/account/Profile/Update", getConfig().getField("domain").AsString()), paramMap, (_reply) =>
             {
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new AnyProtoConverter());

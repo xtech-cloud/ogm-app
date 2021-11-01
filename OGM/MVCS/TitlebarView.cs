@@ -25,7 +25,7 @@ namespace OGM
                 req._strategy = Any.FromInt32(1);
                 req._username = Any.FromString(_username);
                 req._password = Any.FromString(_password);
-                view.authService.PostSignin(req, "public", view.getConfig()["domain.public"].AsString());
+                view.authService.PostSignin(req, "public", view.getConfig().getField("domain.public").AsString());
             }
 
             public void SetStorageValue(string _key, string _value)
