@@ -26,5 +26,16 @@ namespace OGM
             vb.view = this;
             myFacade.setViewBridge(vb);
         }
+        protected override void postSetup()
+        {
+            addRouter(SideMenuAction.ACTIVE_TAB, this.handleActiveTab);
+        }
+
+        private void handleActiveTab(Model.Status _status, object _data)
+        {
+            string tab = (string)_data;
+            var bridge = myFacade.getUiBridge() as ISideMenuUiBridge;
+            bridge.ActiveTab((string)_data);
+        }
     }
 }

@@ -9,5 +9,6 @@ namespace OGM
 
     public interface ISideMenuUiBridge : View.Facade.Bridge
     {
+        void ActiveTab(string _name);
     }
 }

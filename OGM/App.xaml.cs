@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using ogm.account;
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OGM
 {
@@ -16,6 +18,7 @@ namespace OGM
         private ModuleManager moduleMgr_ { get; set; }
         private ConsoleLogger logger_ { get; set; }
         private Config config_ { get; set; }
+        private BlankModel blankModel_ { get; set; }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -32,6 +35,8 @@ namespace OGM
             moduleMgr_.Register();
 
             framework_.Setup();
+
+            updatePermission();
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -40,17 +45,16 @@ namespace OGM
 
             logger_ = new ConsoleLogger();
             config_ = new AppConfig();
-            ConfigSchema schema = new ConfigSchema();
-            schema.application = "MeeXStudio";
-            if (File.Exists("./domain.conf"))
+            // 加载配置文件
+            string curDir = System.IO.Directory.GetCurrentDirectory();
+            string configsDir = Path.Combine(curDir, "configs");
+            if (!Directory.Exists(configsDir))
+                return;
+
+            foreach (string entry in Directory.GetFiles(configsDir))
             {
-                schema.domain_public = File.ReadAllText("./domain.conf");
+                config_.Merge(File.ReadAllText(entry));
             }
-            else
-            {
-                schema.domain_public = "https://api.meex.tech";
-            }
-            config_.Merge(System.Text.Json.JsonSerializer.Serialize(schema));
 
             logger_.setLevel(LogLevel.ALL);
             logger_.Info("OnStartup");
@@ -79,8 +83,8 @@ namespace OGM
             ApplicationModel applicationModel = new ApplicationModel();
             framework_.getStaticPipe().RegisterModel(ApplicationModel.NAME, applicationModel);
 
-            BlankModel blankModel = new BlankModel();
-            framework_.getStaticPipe().RegisterModel(BlankModel.NAME, blankModel);
+            blankModel_ = new BlankModel();
+            framework_.getStaticPipe().RegisterModel(BlankModel.NAME, blankModel_);
 
             StorageModel storageModel = new StorageModel();
             framework_.getStaticPipe().RegisterModel(StorageModel.NAME, storageModel);
@@ -126,11 +130,20 @@ namespace OGM
             MainWindow.MainWindowUiBridge bridgeMainWindow = new MainWindow.MainWindowUiBridge();
             titlebarFacade.setUiBridge(bridgeMainWindow);
 
-            MainWindow wnd = new MainWindow();
-            this.MainWindow = wnd;
-            logger_.appendDelegate = wnd.OnLoggerAppended;
-            wnd.Show();
 
+            StartupWindowFacade facadeStartupWindow = new StartupWindowFacade();
+            framework_.getStaticPipe().RegisterFacade(StartupWindowFacade.NAME, facadeStartupWindow);
+            StartupWindow startupWindow = new StartupWindow();
+            FacadeCache.facadeMainWindow = facadeMainwindow;
+            startupWindow.Show();
+            startupWindow.OnAuthSuccess = (_uuid) =>
+            {
+                MainWindow wnd = new MainWindow();
+                this.MainWindow = wnd;
+                logger_.appendDelegate = wnd.OnLoggerAppended;
+                wnd.Show();
+                startupWindow.Close();
+            };
             /*
             StartupWindow.AuthUiBridge bridge = new StartupWindow.AuthUiBridge();
             bridge.window = startupWindow;
@@ -139,14 +152,6 @@ namespace OGM
             this.MainWindow.Height = 480;
             this.MainWindow.Width = 640;
             startupWindow.Show();
-            startupWindow.onAuthSuccess = (_uuid) =>
-            {
-                MainWindow wnd = new MainWindow();
-                this.MainWindow = wnd;
-                logger_.rtbLogger = wnd.rtbLogger;
-                wnd.Show();
-                startupWindow.Close();
-            };
             */
         }
 
@@ -190,6 +195,28 @@ namespace OGM
                 _data[pair.Key] = Any.FromString(pair.Value);
             }
 
+        }
+
+        private void updatePermission()
+        {
+            // 加载初始权限文件
+            string curDir = System.IO.Directory.GetCurrentDirectory();
+            string permissionsDir = Path.Combine(curDir, "permissions");
+            if (!Directory.Exists(permissionsDir))
+            {
+                return;
+            }
+            Dictionary<string, string> permission = new Dictionary<string, string>();
+            foreach (string entry in Directory.GetFiles(permissionsDir))
+            {
+                string json_data = File.ReadAllText(entry);
+                Dictionary<string, string> dict = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json_data);
+                foreach (var pair in dict)
+                {
+                    permission[pair.Key] = pair.Value;
+                }
+            }
+            blankModel_.Broadcast("/permission/updated", permission);
         }
     }
 }

@@ -9,6 +9,7 @@
              d:DesignHeight="72" d:DesignWidth="800"
              DataContext="{Binding RelativeSource={RelativeSource self}}">
     <hc:SimplePanel>
+        <Image HorizontalAlignment="Left" Source="pack://SiteOfOrigin:,,,/images/slogan.png"></Image>
         <Button Width="30" Height="30" Margin="0 0 90 0" Click="OnMinimumClick" Style="{StaticResource ButtonIcon}" Foreground="Black" hc:IconElement.Geometry="{StaticResource MinimumGeometry}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         <Button Width="30" Height="30" Margin="0 0 50 0" Click="OnMaximumClick" Visibility="{Binding MaximumVisibility}" Style="{StaticResource ButtonIcon}" Foreground="Black" hc:IconElement.Geometry="{StaticResource MaximumGeometry}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         <Button Width="30" Height="30" Margin="0 0 50 0" Click="OnWindowClick" Visibility="{Binding WindowVisibility}" Style="{StaticResource ButtonIcon}" Foreground="Black" hc:IconElement.Geometry="{StaticResource WindowGeometry}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
@@ -46,7 +47,7 @@
                     </hc:SimplePanel>
 
                     <hc:SimplePanel Name="spVersion">
-                            <TextBlock Name="tbVersion" Margin="0,64,32,0" Style="{StaticResource TextBlockTitle}" HorizontalAlignment="Right" VerticalAlignment="Top"></TextBlock>
+                        <TextBlock Name="tbVersion" Margin="0,64,32,0" Style="{StaticResource TextBlockTitle}" HorizontalAlignment="Right" VerticalAlignment="Top"></TextBlock>
                     </hc:SimplePanel>
                 </hc:SimplePanel>
             </Border>

@@ -4,24 +4,23 @@ using XTC.oelMVCS;
 
 namespace OGM
 {
-    class ConfigSchema
-    {
-        public string domain_public { get; set; }
-        public string domain_private { get; set; }
-        public string application { get; set; }
-    }
-
     class AppConfig : Config
     {
         public override void Merge(string _content)
         {
-            ConfigSchema schema = JsonSerializer.Deserialize<ConfigSchema>(_content);
-            if (!string.IsNullOrEmpty(schema.domain_public))
-                fields_["domain.public"] = Any.FromString(schema.domain_public);
-            if (!string.IsNullOrEmpty(schema.domain_private))
-                fields_["domain.private"] = Any.FromString(schema.domain_private);
-            if (!string.IsNullOrEmpty(schema.application))
-                fields_["application"] = Any.FromString(schema.application);
+            Dictionary<string, object> schema = JsonSerializer.Deserialize<Dictionary<string, object>>(_content);
+            foreach (var key in schema.Keys)
+            {
+                var value = (JsonElement)schema[key];
+                if (JsonValueKind.String == value.ValueKind)
+                    fields_[key] = Any.FromString(value.GetString());
+                else if (JsonValueKind.Number == value.ValueKind)
+                    fields_[key] = Any.FromFloat64(value.GetDouble());
+                else if (JsonValueKind.True == value.ValueKind)
+                    fields_[key] = Any.FromBool(true);
+                else if (JsonValueKind.False == value.ValueKind)
+                    fields_[key] = Any.FromBool(false);
+            }
         }
 
     }//class
