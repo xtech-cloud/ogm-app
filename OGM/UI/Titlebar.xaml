@@ -9,15 +9,17 @@
              d:DesignHeight="72" d:DesignWidth="800"
              DataContext="{Binding RelativeSource={RelativeSource self}}">
     <hc:SimplePanel>
-        <Image HorizontalAlignment="Left" Source="pack://SiteOfOrigin:,,,/images/slogan.png"></Image>
+        <Image HorizontalAlignment="Left" Source="pack://SiteOfOrigin:,,,/Resources/images/slogan.png"></Image>
         <Button Width="30" Height="30" Margin="0 0 90 0" Click="OnMinimumClick" Style="{StaticResource ButtonIcon}" Foreground="Black" hc:IconElement.Geometry="{StaticResource MinimumGeometry}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         <Button Width="30" Height="30" Margin="0 0 50 0" Click="OnMaximumClick" Visibility="{Binding MaximumVisibility}" Style="{StaticResource ButtonIcon}" Foreground="Black" hc:IconElement.Geometry="{StaticResource MaximumGeometry}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         <Button Width="30" Height="30" Margin="0 0 50 0" Click="OnWindowClick" Visibility="{Binding WindowVisibility}" Style="{StaticResource ButtonIcon}" Foreground="Black" hc:IconElement.Geometry="{StaticResource WindowGeometry}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         <Button Width="30" Height="30" Margin="0 0 10 0" Click="OnCloseClick" Style="{StaticResource ButtonIcon}" Foreground="Black" hc:IconElement.Geometry="{StaticResource CloseGeometry}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
 
+        <!--
         <Button Margin="0,0,140,0" VerticalAlignment="Center" Padding="0" Foreground="#FF535353" Style="{StaticResource ButtonIcon}" hc:IconElement.Geometry="{StaticResource PrivateAuthGeometry}" Click="onPrivateAuthClicked" HorizontalAlignment="Right"/>
         <Button Margin="0,0,190,0" VerticalAlignment="Center" Padding="0" Foreground="#FF535353" Style="{StaticResource ButtonIcon}" hc:IconElement.Geometry="{StaticResource PublicAuthGeometry}" Click="onPublicAuthClicked" HorizontalAlignment="Right"/>
         <Button Margin="0,0,260,0"  Height="24" VerticalAlignment="Center" Padding="0" Foreground="#FF535353" Style="{StaticResource ButtonIcon}" hc:IconElement.Geometry="{StaticResource VersionGeometry}" Click="onVersionClicked" HorizontalAlignment="Right"/>
+        -->
         <hc:Drawer Name="drawerTop" Dock="Top" ShowMask="True">
             <Border Background="{StaticResource RegionBrush}" Height="300" BorderThickness="0,1,0,0" BorderBrush="{StaticResource BorderBrush}">
                 <hc:SimplePanel>

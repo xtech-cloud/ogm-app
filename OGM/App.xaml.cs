@@ -142,6 +142,8 @@ namespace OGM
                 this.MainWindow = wnd;
                 logger_.appendDelegate = wnd.OnLoggerAppended;
                 wnd.Show();
+                //将缓存的日志显示到UI上。
+                logger_.Info("--------------------------------");
                 startupWindow.Close();
             };
             /*

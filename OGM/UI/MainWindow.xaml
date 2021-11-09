@@ -32,7 +32,7 @@
             <hc:Badge Name="badgeLogger" Maximum="999" BadgeMargin="0,-14,-15,0" Height="30" Width="60"  Margin="32,0,0,0" Style="{StaticResource BadgeDanger}" HorizontalAlignment="Left">
                 <Button HorizontalAlignment="Stretch" Content="日志" Style="{StaticResource ButtonDashedPrimary}" Click="onLoggerClicked"/>
             </hc:Badge>
-            <hc:Badge Name="badgeTask" BadgeMargin="0,-14,-10,0" Height="30" Width="60" Margin="0,0,50,0" Style="{StaticResource BadgeDanger}" HorizontalAlignment="Right">
+            <hc:Badge Name="badgeTask" BadgeMargin="0,-14,-10,0" Height="30" Width="60" Margin="0,0,50,0" Style="{StaticResource BadgeDanger}" HorizontalAlignment="Right" Visibility="Collapsed">
                 <Button Content="任务" Click="onTaskClicked" Style="{StaticResource ButtonDashedPrimary}" HorizontalAlignment="Stretch"/>
             </hc:Badge>
             <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Left" Margin="128, 0,128,0">
@@ -42,7 +42,7 @@
 
         <!-- 左部 -->
         <hc:SimplePanel Width="216" Background="White" HorizontalAlignment="Left" VerticalAlignment="Stretch" Effect="{StaticResource EffectShadow5}">
-            <Image VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="80" Source="pack://SiteOfOrigin:,,,/images/logo.jpg"></Image>
+            <Image VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="80" Source="pack://SiteOfOrigin:,,,/Resources/images/logo.jpg"></Image>
             <ScrollViewer Margin="0,80,0,0">
                 <local:SideMenuControl />
             </ScrollViewer>
