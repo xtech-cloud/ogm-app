@@ -10,12 +10,12 @@
         mc:Ignorable="d" Height="320" Width="640" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None">
 
     <hc:SimplePanel MouseLeftButtonDown="Window_MouseLeftButtonDown" Background="White">
-        <Image Source="pack://SiteOfOrigin:,,,/images/startup.jpg"/>
+        <Image Source="pack://SiteOfOrigin:,,,/Resources/images/startup.jpg"/>
         <Button Width="30" Height="30" Margin="0 0 10 0" Click="OnCloseClick" Style="{StaticResource ButtonIcon}" Foreground="Black" hc:IconElement.Geometry="{StaticResource CloseGeometry}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-        <hc:SimplePanel Margin="320,0,0,0">
+        <hc:SimplePanel Margin="320,60,0,0">
             <StackPanel Margin="32" Orientation="Vertical" VerticalAlignment="Center" >
-                <TextBox Name="tbUsername" hc:InfoElement.TitleWidth="80" hc:InfoElement.TitlePlacement="Left" hc:InfoElement.Title="用户名" hc:InfoElement.Necessary="True" Style="{StaticResource TextBoxExtend}"/>
-                <TextBox Name="tbPassword" Margin="0,24,0,0" hc:InfoElement.TitleWidth="80" hc:InfoElement.TitlePlacement="Left" hc:InfoElement.Title="密码" hc:InfoElement.Necessary="True" Style="{StaticResource TextBoxExtend}"/>
+                <TextBox Name="tbUsername" hc:InfoElement.TitleWidth="60" hc:InfoElement.TitlePlacement="Left" hc:InfoElement.Title="用户名"  Style="{StaticResource TextBoxExtend}"/>
+                <TextBox Name="tbPassword" Margin="0,24,0,0" hc:InfoElement.TitleWidth="60" hc:InfoElement.TitlePlacement="Left" hc:InfoElement.Title="密码"  Style="{StaticResource TextBoxExtend}"/>
                 <Button Margin="0,32,0,0" Style="{StaticResource ButtonPrimary}" HorizontalAlignment="Stretch" Click="onSigninClick">登录</Button>
             </StackPanel>
         </hc:SimplePanel>

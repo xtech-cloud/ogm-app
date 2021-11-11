@@ -13,6 +13,8 @@
         WindowStartupLocation="CenterScreen"
         d:DesignHeight="800" 
         d:DesignWidth="1400" 
+        Height="900"
+        Width="1440"
         StateChanged="OnStateChanghed"
         BorderThickness="0" WindowStyle="None" Icon="/Resources/app.ico"
         Name="mainWindow"
