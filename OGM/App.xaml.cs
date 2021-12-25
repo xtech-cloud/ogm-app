@@ -94,6 +94,9 @@ namespace OGM
             framework_.getStaticPipe().RegisterModel(AuthModel.NAME, new AuthModel());
             framework_.getStaticPipe().RegisterService(AuthService.NAME, new AuthService());
 
+            StartupView startupView = new StartupView();
+            framework_.getStaticPipe().RegisterView(StartupView.NAME, startupView);
+
             MainWindowView mainwindowView = new MainWindowView();
             framework_.getStaticPipe().RegisterView(MainWindowView.NAME, mainwindowView);
 
@@ -110,6 +113,10 @@ namespace OGM
 
         private void registerFacade()
         {
+            StartupFacade startupFacade = new StartupFacade();
+            framework_.getStaticPipe().RegisterFacade(StartupFacade.NAME, startupFacade);
+            FacadeCache.facadeStartup = startupFacade;
+
             TitlebarFacade titlebarFacade = new TitlebarFacade();
             framework_.getStaticPipe().RegisterFacade(TitlebarFacade.NAME, titlebarFacade);
             FacadeCache.facadeTitlebar = titlebarFacade;
@@ -136,25 +143,22 @@ namespace OGM
             StartupWindow startupWindow = new StartupWindow();
             FacadeCache.facadeMainWindow = facadeMainwindow;
             startupWindow.Show();
-            startupWindow.OnAuthSuccess = (_uuid) =>
+            startupWindow.OnAuthSuccess = () =>
             {
                 MainWindow wnd = new MainWindow();
                 this.MainWindow = wnd;
                 logger_.appendDelegate = wnd.OnLoggerAppended;
                 wnd.Show();
+
+                //先最大化一次，避免出现窗口第一次最大化，任务栏消失的问题
+                wnd.WindowState = WindowState.Maximized;
+                wnd.WindowState = WindowState.Normal;
+                wnd.WindowState = WindowState.Maximized;
+
                 //将缓存的日志显示到UI上。
                 logger_.Info("--------------------------------");
                 startupWindow.Close();
             };
-            /*
-            StartupWindow.AuthUiBridge bridge = new StartupWindow.AuthUiBridge();
-            bridge.window = startupWindow;
-            authFacade.setUiBridge(bridge);
-            this.MainWindow = startupWindow;
-            this.MainWindow.Height = 480;
-            this.MainWindow.Width = 640;
-            startupWindow.Show();
-            */
         }
 
         private void cancelMVCS()

@@ -20,16 +20,6 @@ namespace OGM
 
             public void RefreshSigninSuccess(string _location)
             {
-                if (_location.Equals("private"))
-                {
-                    control.spPrivateAuth.Visibility = Visibility.Collapsed;
-                    control.spPrivateProfile.Visibility = Visibility.Visible;
-                }
-                else if (_location.Equals("public"))
-                {
-                    control.spPublicAuth.Visibility = Visibility.Collapsed;
-                    control.spPublicProfile.Visibility = Visibility.Visible;
-                }
             }
         }
 
@@ -59,13 +49,8 @@ namespace OGM
             bridge.control = this;
             facade_.setUiBridge(bridge);
 
-            MaximumVisibility = Visibility.Visible;
-            WindowVisibility = Visibility.Hidden;
-
-            spPrivateAuth.Visibility = Visibility.Visible;
-            spPrivateProfile.Visibility = Visibility.Collapsed;
-            spPublicAuth.Visibility = Visibility.Visible;
-            spPublicProfile.Visibility = Visibility.Collapsed;
+            MaximumVisibility = Visibility.Hidden;
+            WindowVisibility = Visibility.Visible;
         }
 
         private void OnMinimumClick(object sender, RoutedEventArgs e)
@@ -92,46 +77,7 @@ namespace OGM
             Application.Current.Shutdown();
         }
 
-        private void onPublicSigninClick(object sender, RoutedEventArgs e)
-        {
-            ITitlebarViewBridge bridge = facade_.getViewBridge() as ITitlebarViewBridge;
-            bridge.SetStorageValue("PublicUsername", tbPublicUsername.Text);
-            bridge.OnPublicSigninSubmit(tbPublicUsername.Text, pbPublicPassword.Password);
-        }
-
-        private void onPrivateSigninClick(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrEmpty(tbHost.Text) || string.IsNullOrEmpty(tbPrivateUsername.Text) || string.IsNullOrEmpty(pbPrivatePassword.Password))
-                return;
-
-            ITitlebarViewBridge bridge = facade_.getViewBridge() as ITitlebarViewBridge;
-            bridge.SetStorageValue("PrivateHost", tbHost.Text);
-            bridge.SetStorageValue("PrivateUsername", tbPrivateUsername.Text);
-            bridge.OnPrivateSigninSubmit(tbHost.Text, tbPrivateUsername.Text, pbPrivatePassword.Password);
-        }
-
-        private void onPublicAuthClicked(object sender, RoutedEventArgs e)
-        {
-            openTopDrawer("auth.public");
-            ITitlebarViewBridge bridge = facade_.getViewBridge() as ITitlebarViewBridge;
-            tbPublicUsername.Text = bridge.GetStorageValue("PublicUsername");
-        }
-
-        private void onPrivateAuthClicked(object sender, RoutedEventArgs e)
-        {
-            openTopDrawer("auth.private");
-
-            ITitlebarViewBridge bridge = facade_.getViewBridge() as ITitlebarViewBridge;
-            tbHost.Text = bridge.GetStorageValue("PrivateHost");
-            tbPrivateUsername.Text = bridge.GetStorageValue("PrivateUsername");
-        }
-
-        private void onPrivateSignoutClick(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void onPublicSignoutClick(object sender, RoutedEventArgs e)
+        private void onProfileClicked(object sender, RoutedEventArgs e)
         {
 
         }
@@ -145,9 +91,8 @@ namespace OGM
         private void openTopDrawer(string _name)
         {
             drawerTop.IsOpen = true;
-            spPublic.Visibility = _name.Equals("auth.public") ? Visibility.Visible : Visibility.Collapsed;
-            spPrivate.Visibility = _name.Equals("auth.private") ? Visibility.Visible : Visibility.Collapsed;
             spVersion.Visibility = _name.Equals("version") ? Visibility.Visible : Visibility.Collapsed;
         }
+
     }
 }

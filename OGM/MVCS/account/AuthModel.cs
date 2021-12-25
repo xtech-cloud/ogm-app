@@ -10,23 +10,13 @@ namespace ogm.account
 
         public class AuthStatus : Model.Status
         {
-            public class CloudAuth
-            {
-                public CloudAuth()
-                {
-                    accessToken = "";
-                    uuid = "";
-                }
-                public string accessToken { get; set; }
-                public string uuid { get; set; }
-            }
             public const string NAME = "AuthStatus";
-            public CloudAuth publicAuth { get; set; }
-            public CloudAuth privateAuth { get; set; }
+            public string accessToken { get; set; }
+            public string uuid { get; set; }
             public AuthStatus()
             {
-                publicAuth = new CloudAuth();
-                privateAuth = new CloudAuth();
+                accessToken = "";
+                uuid = "";
             }
         }
 
@@ -64,7 +54,7 @@ namespace ogm.account
             }
         }
 
-        public void UpdateSigninReply(Model.Status _reply, string _accessToken, string _uuid, string _location, string _host)
+        public void UpdateSigninReply(Model.Status _reply, string _accessToken, string _uuid)
         {
             Dictionary<string, Any> data = new Dictionary<string, Any>();
             data["code"] = Any.FromInt32(_reply.getCode());
@@ -75,21 +65,12 @@ namespace ogm.account
                 return;
             }
 
-            if (_location.Equals("Public"))
-            {
-                status.publicAuth.accessToken = _accessToken;
-                status.publicAuth.uuid = _uuid;
-            }
-            else if (_location.Equals("Private"))
-            {
-                status.privateAuth.accessToken = _accessToken;
-                status.privateAuth.uuid = _uuid;
-            }
+            status.accessToken = _accessToken;
+            status.uuid = _uuid;
 
             data["accessToken"] = Any.FromString(_accessToken);
             data["uuid"] = Any.FromString(_uuid);
-            data["location"] = Any.FromString(_location);
-            data["host"] = Any.FromString(_host);
+            //data["host"] = Any.FromString(_host);
             Broadcast("/Application/Auth/Signin/Success", data);
         }
     }

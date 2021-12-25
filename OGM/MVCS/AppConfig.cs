@@ -23,5 +23,13 @@ namespace OGM
             }
         }
 
+        public void MergeDict(Dictionary<string, Any> _pairs)
+        {
+            foreach (var pair in _pairs)
+            {
+                fields_[pair.Key] = pair.Value; 
+            }
+        }
+
     }//class
 }//namespace

@@ -13,7 +13,20 @@ namespace ogm.account
     {
         public const string NAME = "AuthService";
         private AuthModel model = null;
-        public string domain { get; set; }
+        private string domain
+        {
+            get
+            {
+                return getConfig().getField("domain").AsString();
+            }
+        }
+        private string apikey
+        {
+            get
+            {
+                return getConfig().getField("apikey").AsString();
+            }
+        }
 
         protected override void preSetup()
         {
@@ -25,13 +38,17 @@ namespace ogm.account
             getLogger().Trace("setup AuthService");
         }
 
+        protected override void postSetup()
+        {
+        }
+
         public void PostSignup(Proto.SignupRequest _request)
         {
             Dictionary<string, Any> paramMap = new Dictionary<string, Any>();
             paramMap["username"] = _request._username;
-            paramMap["password"] = Any.FromString(wrapPassword(_request._password.AsString()));
+            paramMap["password"] = _request._password;
 
-            post(string.Format("{0}/xtc/ogm/account/Auth/Signup", getConfig().getField("domain").AsString()), paramMap, (_reply) =>
+            post(string.Format("{0}/ogm/account/Auth/Signup", getConfig().getField("domain").AsString()), paramMap, (_reply) =>
             {
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new AnyProtoConverter());
@@ -45,27 +62,25 @@ namespace ogm.account
         }
 
 
-        public void PostSignin(Proto.SigninRequest _request, string _location, string _domain)
+        public void PostSignin(Proto.SigninRequest _request)
         {
             Dictionary<string, Any> paramMap = new Dictionary<string, Any>();
             paramMap["strategy"] = _request._strategy;
             paramMap["username"] = _request._username;
-            paramMap["password"] = Any.FromString(wrapPassword(_request._password.AsString()));
-            string location = _location;
-            string host = _domain;
+            paramMap["password"] = _request._password;
 
-            post(string.Format("{0}/xtc/ogm/account/Auth/Signin", _domain), paramMap, (_reply) =>
+            post(string.Format("{0}/ogm/account/Auth/Signin", domain), paramMap, (_reply) =>
             {
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new AnyProtoConverter());
                 var rsp = JsonSerializer.Deserialize<Proto.SigninResponse>(_reply, options);
                 Model.Status reply = Model.Status.New<Model.Status>(rsp._status._code.AsInt32(), rsp._status._message.AsString());
-                model.UpdateSigninReply(reply, rsp._accessToken.AsString(), rsp._uuid.AsString(), location, host);
+                model.UpdateSigninReply(reply, rsp._accessToken.AsString(), rsp._uuid.AsString());
             }, (_err) =>
             {
                 getLogger().Error(_err.getMessage());
                 Model.Status reply = Model.Status.New<Model.Status>(_err.getCode(), _err.getMessage());
-                model.UpdateSigninReply(reply, "", "", location, host);
+                model.UpdateSigninReply(reply, "", "");
             }, null);
         }
 
@@ -75,7 +90,7 @@ namespace ogm.account
             paramMap["strategy"] = _request._strategy;
             paramMap["accessToken"] = _request._accessToken;
 
-            post(string.Format("{0}/xtc/ogm/account/Auth/Signout", domain), paramMap, (_reply) =>
+            post(string.Format("{0}/ogm/account/Auth/Signout", domain), paramMap, (_reply) =>
             {
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new AnyProtoConverter());
@@ -96,7 +111,7 @@ namespace ogm.account
             paramMap["accessToken"] = _request._accessToken;
             paramMap["password"] = _request._password;
 
-            post(string.Format("{0}/xtc/ogm/account/Auth/ResetPasswd", domain), paramMap, (_reply) =>
+            post(string.Format("{0}/ogm/account/Auth/ResetPasswd", domain), paramMap, (_reply) =>
             {
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new AnyProtoConverter());
@@ -120,6 +135,7 @@ namespace ogm.account
                 req.Method = _method;
                 req.ContentType =
                 "application/json;charset=utf-8";
+                req.Headers.Add("apikey", apikey);
                 var options = new JsonSerializerOptions();
                 options.Converters.Add(new AnyProtoConverter());
                 byte[] data = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(_params, options);
@@ -154,35 +170,5 @@ namespace ogm.account
             }
             _onReply(reply);
         }
-
-        private string wrapPassword(string _password)
-        {
-            string password = reverseString(_password);
-            password = toMd5(password).ToUpper();
-            password = reverseString(password);
-            password = toMd5(password).ToUpper();
-            return password;
-        }
-
-        private string toMd5(string _value)
-        {
-            MD5 md5 = MD5.Create();
-            byte[] byteOld = Encoding.UTF8.GetBytes(_value);
-            byte[] byteNew = md5.ComputeHash(byteOld);
-            StringBuilder sb = new StringBuilder();
-            foreach (byte b in byteNew)
-            {
-                sb.Append(b.ToString("x2"));
-            }
-            return sb.ToString();
-        }
-
-        private string reverseString(string _value)
-        {
-            char[] cs = _value.ToCharArray();
-            System.Array.Reverse(cs);
-            return new string(cs);
-        }
-
     }
 }

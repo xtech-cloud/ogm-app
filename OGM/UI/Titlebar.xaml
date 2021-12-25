@@ -15,39 +15,11 @@
         <Button Width="30" Height="30" Margin="0 0 50 0" Click="OnWindowClick" Visibility="{Binding WindowVisibility}" Style="{StaticResource ButtonIcon}" Foreground="Black" hc:IconElement.Geometry="{StaticResource WindowGeometry}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         <Button Width="30" Height="30" Margin="0 0 10 0" Click="OnCloseClick" Style="{StaticResource ButtonIcon}" Foreground="Black" hc:IconElement.Geometry="{StaticResource CloseGeometry}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
 
-        <!--
-        <Button Margin="0,0,140,0" VerticalAlignment="Center" Padding="0" Foreground="#FF535353" Style="{StaticResource ButtonIcon}" hc:IconElement.Geometry="{StaticResource PrivateAuthGeometry}" Click="onPrivateAuthClicked" HorizontalAlignment="Right"/>
-        <Button Margin="0,0,190,0" VerticalAlignment="Center" Padding="0" Foreground="#FF535353" Style="{StaticResource ButtonIcon}" hc:IconElement.Geometry="{StaticResource PublicAuthGeometry}" Click="onPublicAuthClicked" HorizontalAlignment="Right"/>
-        <Button Margin="0,0,260,0"  Height="24" VerticalAlignment="Center" Padding="0" Foreground="#FF535353" Style="{StaticResource ButtonIcon}" hc:IconElement.Geometry="{StaticResource VersionGeometry}" Click="onVersionClicked" HorizontalAlignment="Right"/>
-        -->
+        <Button Margin="0,0,140,0" VerticalAlignment="Center" Padding="0" Foreground="#FF535353" Style="{StaticResource ButtonIcon}" hc:IconElement.Geometry="{StaticResource PublicAuthGeometry}" Click="onProfileClicked" HorizontalAlignment="Right"/>
+        <Button Margin="0,0,190,0"  Height="24" VerticalAlignment="Center" Padding="0" Foreground="#FF535353" Style="{StaticResource ButtonIcon}" hc:IconElement.Geometry="{StaticResource VersionGeometry}" Click="onVersionClicked" HorizontalAlignment="Right"/>
         <hc:Drawer Name="drawerTop" Dock="Top" ShowMask="True">
             <Border Background="{StaticResource RegionBrush}" Height="300" BorderThickness="0,1,0,0" BorderBrush="{StaticResource BorderBrush}">
                 <hc:SimplePanel>
-                    <hc:SimplePanel Name="spPrivate">
-                        <StackPanel Name="spPrivateAuth" Margin="32" Width="440" HorizontalAlignment="Right"  hc:InfoElement.TitleWidth="80"  Orientation="Vertical">
-                            <TextBlock Text="私有云登录" Style="{StaticResource TextBlockTitle}"></TextBlock>
-                            <TextBox Name="tbHost" hc:InfoElement.TitlePlacement="Left" hc:InfoElement.Title="私有云地址" Style="{StaticResource TextBoxExtend}" Margin="0,32,0,0"/>
-                            <TextBox Name="tbPrivateUsername" hc:InfoElement.TitlePlacement="Left" hc:InfoElement.Title="用户名" Style="{StaticResource TextBoxExtend}" Margin="0,16,0,0"/>
-                            <PasswordBox  Name="pbPrivatePassword" hc:InfoElement.TitlePlacement="Left" hc:InfoElement.Title="密码" Style="{StaticResource PasswordBoxExtend}" Margin="0,16,0,0"/>
-                            <Button Style="{StaticResource ButtonSuccess}" Content="登录" HorizontalAlignment="Stretch" Click="onPrivateSigninClick" Margin="0,16,0,0"/>
-                        </StackPanel>
-                        <StackPanel Name="spPrivateProfile" Margin="32" Width="440" HorizontalAlignment="Right"  hc:InfoElement.TitleWidth="80"  Orientation="Vertical">
-                            <Button Style="{StaticResource ButtonSuccess}" Content="注销登录" HorizontalAlignment="Stretch" Click="onPrivateSignoutClick" Margin="0,16,0,0"/>
-                        </StackPanel>
-                    </hc:SimplePanel>
-
-                    <hc:SimplePanel Name="spPublic">
-                        <StackPanel Name="spPublicAuth" Margin="32" Width="440" HorizontalAlignment="Right"  hc:InfoElement.TitleWidth="80"  Orientation="Vertical">
-                            <TextBlock Text="公有云登录" Style="{StaticResource TextBlockTitle}"></TextBlock>
-                            <TextBox Name="tbPublicUsername" hc:InfoElement.TitlePlacement="Left" hc:InfoElement.Title="用户名" Style="{StaticResource TextBoxExtend}" Margin="0,32,0,0"/>
-                            <PasswordBox  Name="pbPublicPassword" hc:InfoElement.TitlePlacement="Left" hc:InfoElement.Title="密码" Style="{StaticResource PasswordBoxExtend}" Margin="0,16,0,0"/>
-                            <Button Style="{StaticResource ButtonSuccess}" Content="登录" HorizontalAlignment="Stretch" Click="onPublicSigninClick" Margin="0,16,0,0"/>
-                        </StackPanel>
-                        <StackPanel Name="spPublicProfile" Margin="32" Width="440" HorizontalAlignment="Right"  hc:InfoElement.TitleWidth="80"  Orientation="Vertical">
-                            <Button Style="{StaticResource ButtonSuccess}" Content="注销登录" HorizontalAlignment="Stretch" Click="onPublicSignoutClick" Margin="0,16,0,0"/>
-                        </StackPanel>
-                    </hc:SimplePanel>
-
                     <hc:SimplePanel Name="spVersion">
                         <TextBlock Name="tbVersion" Margin="0,64,32,0" Style="{StaticResource TextBlockTitle}" HorizontalAlignment="Right" VerticalAlignment="Top"></TextBlock>
                     </hc:SimplePanel>
