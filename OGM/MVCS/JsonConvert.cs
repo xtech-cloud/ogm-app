@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using System.Collections.Generic;
 using XTC.oelMVCS;
 
-namespace ogm.account
+namespace OGM
 {
     /// <summary>
     /// 用于将请求数据序列化为json
