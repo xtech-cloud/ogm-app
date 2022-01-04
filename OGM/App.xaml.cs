@@ -3,8 +3,6 @@ using System.Windows;
 using System.Collections.Generic;
 using System;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OGM
 {
@@ -18,6 +16,7 @@ namespace OGM
         private ConsoleLogger logger_ { get; set; }
         private Config config_ { get; set; }
         private BlankModel blankModel_ { get; set; }
+        private Upgrade upgrade_ { get; set; }
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -36,6 +35,10 @@ namespace OGM
             framework_.Setup();
 
             updatePermission();
+
+            //检查更新
+            upgrade_ = new Upgrade();
+            upgrade_.Run();
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -223,5 +226,7 @@ namespace OGM
             }
             blankModel_.Broadcast("/permission/updated", permission);
         }
+
+      
     }
 }

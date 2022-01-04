@@ -10,7 +10,7 @@
         mc:Ignorable="d" Height="320" Width="640" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="None">
 
     <hc:SimplePanel MouseLeftButtonDown="Window_MouseLeftButtonDown" Background="White">
-        <Image Source="pack://SiteOfOrigin:,,,/Resources/images/startup.jpg"/>
+        <Image Source="pack://SiteOfOrigin:,,,/Resources/images/startup.jpg" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
         <Button Width="30" Height="30" Margin="0 0 10 0" Click="OnCloseClick" Style="{StaticResource ButtonIcon}" Foreground="Black" hc:IconElement.Geometry="{StaticResource CloseGeometry}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         <Button Width="30" Height="30" Padding="8" Margin="0 0 40 0" Click="OnSettingClick" Style="{StaticResource ButtonIcon}" Foreground="Black" hc:IconElement.Geometry="{StaticResource SettingGeometry}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         <hc:SimplePanel Name="panelLogin" Margin="320,60,0,0">
@@ -21,7 +21,7 @@
                 <TextBlock x:Name="tbError" Margin="0,24,0,0" Style="{StaticResource TextBlockDefaultDanger}"></TextBlock>
             </StackPanel>
         </hc:SimplePanel>
-        <hc:SimplePanel Name="panelSetting" Margin="0,0,0,0">
+        <hc:SimplePanel Name="panelSetting" Margin="0,0,0,0" Background="White" >
             <StackPanel Margin="64" Orientation="Vertical" VerticalAlignment="Top" >
                 <TextBox Name="tbDomain" hc:InfoElement.TitleWidth="60" hc:InfoElement.TitlePlacement="Left" hc:InfoElement.Title="服务地址"  Style="{StaticResource TextBoxExtend}"/>
                 <TextBox Name="tbApiKey" Margin="0,24,0,0" hc:InfoElement.TitleWidth="60" hc:InfoElement.TitlePlacement="Left" hc:InfoElement.Title="访问令牌"  Style="{StaticResource TextBoxExtend}"/>

@@ -44,7 +44,7 @@
 
         <!-- 左部 -->
         <hc:SimplePanel Width="216" Background="White" HorizontalAlignment="Left" VerticalAlignment="Stretch" Effect="{StaticResource EffectShadow5}">
-            <Image VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="80" Source="pack://SiteOfOrigin:,,,/Resources/images/logo.jpg"></Image>
+            <Image VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="80" Source="pack://SiteOfOrigin:,,,/Resources/images/logo.jpg" RenderOptions.BitmapScalingMode="NearestNeighbor"></Image>
             <ScrollViewer Margin="0,80,0,0">
                 <local:SideMenuControl />
             </ScrollViewer>

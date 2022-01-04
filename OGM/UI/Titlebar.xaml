@@ -9,7 +9,7 @@
              d:DesignHeight="72" d:DesignWidth="800"
              DataContext="{Binding RelativeSource={RelativeSource self}}">
     <hc:SimplePanel>
-        <Image HorizontalAlignment="Left" Source="pack://SiteOfOrigin:,,,/Resources/images/slogan.png"></Image>
+        <Image HorizontalAlignment="Left" Source="pack://SiteOfOrigin:,,,/Resources/images/slogan.png" RenderOptions.BitmapScalingMode="NearestNeighbor"></Image>
         <Button Width="30" Height="30" Margin="0 0 90 0" Click="OnMinimumClick" Style="{StaticResource ButtonIcon}" Foreground="Black" hc:IconElement.Geometry="{StaticResource MinimumGeometry}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         <Button Width="30" Height="30" Margin="0 0 50 0" Click="OnMaximumClick" Visibility="{Binding MaximumVisibility}" Style="{StaticResource ButtonIcon}" Foreground="Black" hc:IconElement.Geometry="{StaticResource MaximumGeometry}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         <Button Width="30" Height="30" Margin="0 0 50 0" Click="OnWindowClick" Visibility="{Binding WindowVisibility}" Style="{StaticResource ButtonIcon}" Foreground="Black" hc:IconElement.Geometry="{StaticResource WindowGeometry}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
