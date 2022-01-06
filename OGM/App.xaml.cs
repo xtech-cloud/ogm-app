@@ -38,6 +38,7 @@ namespace OGM
 
             //检查更新
             upgrade_ = new Upgrade();
+            upgrade_.logger = logger_;
             upgrade_.Run();
         }
 

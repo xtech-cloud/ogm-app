@@ -8,10 +8,13 @@ namespace OGM
 {
     public class Upgrade
     {
+        public XTC.oelMVCS.Logger logger { get; set; }
+
         private string version_ { get; set; }
         public class Config
         {
-            public string repository { get; set; }
+            public string patch_repository { get; set; }
+            public string update_repository { get; set; }
 
         }
 
@@ -37,10 +40,19 @@ namespace OGM
             if (null == config)
                 return;
 
-            Patch.Args args = new Patch.Args();
-            args.repository = config.repository;
+            Patch.Args patchArgs = new Patch.Args();
+            patchArgs.repository = config.patch_repository;
             Patch patcher = new Patch();
-            patcher.PullRpository(args, (_repo) =>
+            patcher.onSuccess = () =>
+            {
+                logger.Info("patch updrade success");
+            };
+            patcher.onFailure = (_err) =>
+            {
+                logger.Error("patch updrade failure: {0}", _err);
+            };
+            patcher.onStatus = (_progress, _tip) => { };
+            patcher.PullRpository(patchArgs, (_repo) =>
             {
                 if (null == _repo)
                     return;
@@ -55,6 +67,35 @@ namespace OGM
                     {
                         // 显示更新提示
                     }
+                }
+                else
+                {
+                    Update.Args updateArgs = new Update.Args();
+                    updateArgs.repository = config.update_repository;
+                    Update updater = new Update();
+                    updater.onSuccess = () =>
+                    {
+                        logger.Info("updat updrade success");
+                    };
+                    updater.onFailure = (_err) =>
+                    {
+                        logger.Error("update updrade failure: {0}", _err);
+                    };
+                    updater.onStatus = (_progress, _tip) => { };
+                    updater.PullRpository(updateArgs, (_repo) =>
+                    {
+                        if (null == _repo)
+                            return;
+                        if (!updater.Match(_repo, System.IO.Directory.GetCurrentDirectory()))
+                        {
+                            // 自动开始更新
+                            runUpgrader(config);
+                        }
+
+                    }, (_error) =>
+                     {
+                     });
+
                 }
             }, (_error) =>
              {
@@ -74,7 +115,7 @@ namespace OGM
             string self_exe = Path.Combine(workdir, "OGM.exe");
             ProcessStartInfo psi = new ProcessStartInfo();
             psi.FileName = Path.Combine(distdir, "upgrade/Upgrade.WPF.exe");
-            string args = string.Format("--patch-repository={0} --patch-version={1} --patch-target={2} --program-path={3} --program-workdir={4}", _config.repository, version_, workdir, self_exe, workdir);
+            string args = string.Format("--patch-repository={0} --patch-version={1} --patch-target={2} --update-repository={3} --update-target={4} --program-path={5} --program-workdir={6}", _config.patch_repository, version_, workdir, _config.update_repository, workdir, self_exe, workdir);
             psi.Arguments = args;
             psi.WorkingDirectory = workdir;
             psi.UseShellExecute = false;
