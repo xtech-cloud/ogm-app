@@ -6,6 +6,19 @@ using XTC.oelUpgrade;
 
 namespace OGM
 {
+    public class JsonConvert : IJsonConvert
+    {
+        public T FromJson<T>(string _json)
+        {
+            return JsonSerializer.Deserialize<T>(_json);
+        }
+
+        public string ToJson<T>(T _object)
+        {
+            return JsonSerializer.Serialize<T>(_object);
+        }
+    }
+
     public class Upgrade
     {
         public XTC.oelMVCS.Logger logger { get; set; }
@@ -40,6 +53,8 @@ namespace OGM
             if (null == config)
                 return;
 
+
+            JsonUtility.convert = new JsonConvert();
             Patch.Args patchArgs = new Patch.Args();
             patchArgs.repository = config.patch_repository;
             Patch patcher = new Patch();
@@ -55,7 +70,11 @@ namespace OGM
             patcher.PullRpository(patchArgs, (_repo) =>
             {
                 if (null == _repo)
+                {
+                    checkUpdate(config);
                     return;
+                }
+
                 if (patcher.CompareVersion(version_, _repo.version) < 0)
                 {
                     if (Patch.Strategy.Auto.ToString() == _repo.strategy)
@@ -70,36 +89,44 @@ namespace OGM
                 }
                 else
                 {
-                    Update.Args updateArgs = new Update.Args();
-                    updateArgs.repository = config.update_repository;
-                    Update updater = new Update();
-                    updater.onSuccess = () =>
-                    {
-                        logger.Info("updat updrade success");
-                    };
-                    updater.onFailure = (_err) =>
-                    {
-                        logger.Error("update updrade failure: {0}", _err);
-                    };
-                    updater.onStatus = (_progress, _tip) => { };
-                    updater.PullRpository(updateArgs, (_repo) =>
-                    {
-                        if (null == _repo)
-                            return;
-                        if (!updater.Match(_repo, System.IO.Directory.GetCurrentDirectory()))
-                        {
-                            // 自动开始更新
-                            runUpgrader(config);
-                        }
-
-                    }, (_error) =>
-                     {
-                     });
-
+                    checkUpdate(config);
                 }
             }, (_error) =>
              {
+                 config.patch_repository = "";
+                 checkUpdate(config);
              });
+        }
+
+        private void checkUpdate(Config _config)
+        {
+            Update.Args updateArgs = new Update.Args();
+            updateArgs.repository = _config.update_repository;
+            Update updater = new Update();
+            updater.onSuccess = () =>
+            {
+                logger.Info("updat updrade success");
+            };
+            updater.onFailure = (_err) =>
+            {
+                logger.Error("update updrade failure: {0}", _err);
+            };
+            updater.onStatus = (_progress, _tip) => { };
+            updater.PullRpository(updateArgs, (_repo) =>
+            {
+                if (null == _repo)
+                    return;
+                if (!updater.Match(_repo, System.IO.Directory.GetCurrentDirectory()))
+                {
+                    // 自动开始更新
+                    runUpgrader(_config);
+                }
+
+            }, (_error) =>
+             {
+
+             });
+
         }
 
         private void runUpgrader(Config _config)
